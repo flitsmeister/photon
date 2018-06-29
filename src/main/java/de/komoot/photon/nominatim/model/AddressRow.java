@@ -44,13 +44,13 @@ public class AddressRow {
     }
 
     public boolean isCity() {
-        if ("place".equals(osmKey) && Arrays.binarySearch(CITY_PLACE_VALUES, osmValue) >= 0) {
-            return true;
-        }
+        // if ("place".equals(osmKey) && Arrays.binarySearch(CITY_PLACE_VALUES, osmValue) >= 0) {
+        //     return true;
+        // }
 
-        if (place != null && Arrays.binarySearch(CITY_PLACE_VALUES, place) >= 0) {
-            return true;
-        }
+        // if (place != null && Arrays.binarySearch(CITY_PLACE_VALUES, place) >= 0) {
+        //     return true;
+        // }
 
         if (adminLevel != null && adminLevel == 10 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
             return true;
