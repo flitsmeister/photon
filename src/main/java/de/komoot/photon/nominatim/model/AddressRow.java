@@ -1,5 +1,6 @@
 package de.komoot.photon.nominatim.model;
 
+import com.neovisionaries.i18n.CountryCode;
 import com.google.common.base.Objects;
 import lombok.Data;
 
@@ -43,14 +44,18 @@ public class AddressRow {
         return 26 <= rankAddress && rankAddress < 28;
     }
 
-    public boolean isCity() {
-        // if ("place".equals(osmKey) && Arrays.binarySearch(CITY_PLACE_VALUES, osmValue) >= 0) {
-        //     return true;
-        // }
+    public boolean isCity(CountryCode countryCode) {
+        if (countryCode == CountryCode.NL) {
+            return adminLevel != null && adminLevel == 10 && "boundary".equals(osmKey) && "administrative".equals(osmValue);
+        }
 
-        // if (place != null && Arrays.binarySearch(CITY_PLACE_VALUES, place) >= 0) {
-        //     return true;
-        // }
+        if ("place".equals(osmKey) && Arrays.binarySearch(CITY_PLACE_VALUES, osmValue) >= 0) {
+            return true;
+        }
+
+        if (place != null && Arrays.binarySearch(CITY_PLACE_VALUES, place) >= 0) {
+            return true;
+        }
 
         if (adminLevel != null && adminLevel == 10 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
             return true;

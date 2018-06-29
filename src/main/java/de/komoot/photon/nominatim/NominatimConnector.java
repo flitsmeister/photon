@@ -446,7 +446,7 @@ public class NominatimConnector {
                 doc.setPostcode(address.getPostcode());
             }
 
-            if (address.isCity()) {
+            if (address.isCity(doc.getCountryCode())) {
                 if (doc.getCity() == null) {
                     doc.setCity(address.getName());
                 } else {
