@@ -93,7 +93,7 @@ public class AddressRow {
         return postcode != null; // TODO really null?
     }
 
-    public boolean hasPlace() {
+    public boolean hasPlace(CountryCode countryCode) {
         if (countryCode == CountryCode.NL) {
             return adminLevel != null && adminLevel == 10;
         }
