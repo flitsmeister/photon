@@ -57,7 +57,7 @@ public class AddressRow {
             return true;
         }
 
-        if (adminLevel != null && adminLevel == 10 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
+        if (adminLevel != null && adminLevel == 8 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
             return true;
         }
 
