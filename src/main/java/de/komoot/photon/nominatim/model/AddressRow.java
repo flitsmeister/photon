@@ -45,9 +45,6 @@ public class AddressRow {
     }
 
     public boolean isCity(CountryCode countryCode) {
-        if (countryCode == CountryCode.NL) {
-            return adminLevel != null && adminLevel == 10 && "boundary".equals(osmKey) && "administrative".equals(osmValue);
-        }
 
         if ("place".equals(osmKey) && Arrays.binarySearch(CITY_PLACE_VALUES, osmValue) >= 0) {
             return true;
@@ -57,8 +54,12 @@ public class AddressRow {
             return true;
         }
 
-        if (adminLevel != null && adminLevel == 10 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
+        if (adminLevel != null && adminLevel == 8 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
             return true;
+        }
+
+        if (countryCode == CountryCode.NL) {
+            return adminLevel != null && adminLevel == 10 && "boundary".equals(osmKey) && "administrative".equals(osmValue);
         }
 
         return false;
@@ -92,7 +93,10 @@ public class AddressRow {
         return postcode != null; // TODO really null?
     }
 
-    public boolean hasPlace() {
+    public boolean hasPlace(CountryCode countryCode) {
+        if (countryCode == CountryCode.NL) {
+            return adminLevel != null && adminLevel == 10;
+        }
         return place != null;
     }
 
