@@ -230,16 +230,6 @@ public class Server {
                 // add language specific collector to default for name
                 JSONObject name = propertiesObject.optJSONObject("name");
                 JSONObject nameProperties = name == null ? null : name.optJSONObject("properties");
-                if (nameProperties != null) {
-                    JSONObject defaultObject = nameProperties.optJSONObject("default");
-                    JSONArray copyToArray = defaultObject.optJSONArray("copy_to");
-                    copyToArray.put("name." + lang);
-
-                    defaultObject.put("copy_to", copyToArray);
-                    nameProperties.put("default", defaultObject);
-                    name.put("properties", nameProperties);
-                    propertiesObject.put("name", name);
-                }
 
                 // add language specific collector
                 propertiesObject = addToCollector("collector", propertiesObject, collectorObject, lang);
