@@ -86,10 +86,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                 .boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MULTIPLY);
 
         // @formatter:off
-        m_queryBuilderForTopLevelFilter = QueryBuilders.boolQuery()
-                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
-                .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
-                .should(QueryBuilders.existsQuery(String.format("name.%s.raw", language)));
+        m_queryBuilderForTopLevelFilter = QueryBuilders.boolQuery();
         // @formatter:on
 
         state = State.PLAIN;
