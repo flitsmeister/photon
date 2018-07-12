@@ -483,7 +483,7 @@ public class NominatimConnector {
             }
 
             // no specifically handled item, check if useful for context
-            if (address.isUsefulForContext()) {
+            if (address.isUsefulForContext(doc.getCountryCode())) {
                 doc.getContext().add(address.getName());
             }
         }

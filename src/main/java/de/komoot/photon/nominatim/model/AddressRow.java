@@ -100,7 +100,7 @@ public class AddressRow {
         return place != null;
     }
 
-    public boolean isUsefulForContext() {
+    public boolean isUsefulForContext(CountryCode countryCode) {
         if (name.isEmpty()) {
             return false;
         }
@@ -116,6 +116,10 @@ public class AddressRow {
 
         if (rankAddress < 4) {
             // continent, sea, ...
+            return false;
+        }
+
+        if (countryCode == CountryCode.NL && adminLevel == 6) {
             return false;
         }
 
