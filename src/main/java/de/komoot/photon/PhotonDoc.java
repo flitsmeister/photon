@@ -64,6 +64,17 @@ public class PhotonDoc {
         this.centroid = centroid;
         this.linkedPlaceId = linkedPlaceId;
         this.rankSearch = rankSearch;
+
+        this.addDefaultCountryNameIfNeeded(this.name);
+    }
+
+    private void addDefaultCountryNameIfNeeded(Map<String, String> values) {
+        if (values != null && this.countryCode != null) {
+            String nameKey = "name:" + this.countryCode.getAlpha2().toLowerCase();
+            if (values.containsKey("name") && !values.containsKey(nameKey)) {
+                values.put(nameKey, values.get("name"));
+            }
+        }
     }
 
     public PhotonDoc(PhotonDoc other) {
