@@ -313,11 +313,12 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
         if (state.equals(State.FILTERED)) {
 
+            BoolQueryBuilder tagFilters = QueryBuilders.boolQuery();
             if (orQueryBuilderForIncludeTagFiltering != null)
-                m_finalQueryBuilder.filter(orQueryBuilderForIncludeTagFiltering);
+                tagFilters.must(orQueryBuilderForIncludeTagFiltering);
             if (andQueryBuilderForExcludeTagFiltering != null)
-                m_finalQueryBuilder.filter(andQueryBuilderForExcludeTagFiltering);
-
+                tagFilters.must(andQueryBuilderForExcludeTagFiltering);
+            m_finalQueryBuilder.filter(tagFilters);
         }
 
         state = State.FINISHED;
