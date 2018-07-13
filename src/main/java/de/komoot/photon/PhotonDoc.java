@@ -70,9 +70,25 @@ public class PhotonDoc {
 
     private void addDefaultCountryNameIfNeeded(Map<String, String> values) {
         if (values != null && this.countryCode != null) {
-            String nameKey = "name:" + this.countryCode.getAlpha2().toLowerCase();
+            String countryCode = this.countryCode.getAlpha2().toLowerCase();
+            String language = countryCode;
+            switch (language) {
+                case "lu":
+                    language = "lb";
+                    break;
+                case "be":
+                    language = "nl";
+                    break;
+            }
+            String nameKey = "name:" + language;
             if (values.containsKey("name") && !values.containsKey(nameKey)) {
                 values.put(nameKey, values.get("name"));
+            }
+            if (countryCode == "be") {
+                nameKey = "name:fr";
+                if (values.containsKey("name") && !values.containsKey(nameKey)) {
+                    values.put(nameKey, values.get("name"));
+                }
             }
         }
     }
