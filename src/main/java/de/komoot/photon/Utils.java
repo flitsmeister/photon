@@ -27,8 +27,11 @@ public class Utils {
                 .field(Constants.OSM_TYPE, doc.getOsmType())
                 .field(Constants.OSM_KEY, doc.getTagKey())
                 .field(Constants.OSM_VALUE, doc.getTagValue())
-                .field(Constants.IMPORTANCE, doc.getImportance())
-                .field(Constants.COUNTRY_CODE, doc.getCountryCode().getAlpha2());
+                .field(Constants.IMPORTANCE, doc.getImportance());
+
+        if (doc.getCountryCode() != null) {
+            builder.field(Constants.COUNTRY_CODE, doc.getCountryCode().getAlpha2());
+        }
 
         if (doc.getCentroid() != null) {
             builder.startObject("coordinate")
