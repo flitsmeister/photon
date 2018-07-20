@@ -38,7 +38,8 @@ public class NominatimUpdater {
             for (Map<String, Object> sector : getIndexSectors(rank))
                 for (UpdateRow place : getIndexSectorPlaces(rank, (Integer) sector.get("geometry_sector"))) {
 
-                    template.update("update placex set indexed_status = 0 where place_id = ?", place.getPlaceId());
+                    // Dont update nominatim indexes, multiple photons can update from the same one
+                    // template.update("update placex set indexed_status = 0 where place_id = ?", place.getPlaceId());
                     final PhotonDoc updatedDoc = exporter.getByPlaceId(place.getPlaceId());
 
                     switch (place.getIndexdStatus()) {
