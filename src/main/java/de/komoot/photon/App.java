@@ -152,5 +152,9 @@ public class App {
             new Thread(() -> nominatimUpdater.update()).start();
             return "nominatim update started (more information in console output) ...";
         });
+
+        get("/update-status", (Request request, Response response) -> {
+            return nominatimUpdater.isUpdating().toString();
+        });
     }
 }

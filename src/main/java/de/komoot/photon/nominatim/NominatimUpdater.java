@@ -25,6 +25,7 @@ public class NominatimUpdater {
     private final Integer maxRank = 30;
     private final JdbcTemplate template;
     private final NominatimConnector exporter;
+    private Boolean updating = false;
 
     private Updater updater;
 
@@ -32,7 +33,12 @@ public class NominatimUpdater {
         this.updater = updater;
     }
 
+    public Boolean isUpdating() {
+        return updating;
+    }
+
     public void update() {
+        updating = true;
         for (Integer rank = this.minRank; rank <= this.maxRank; rank++) {
             LOGGER.info(String.format("Starting rank %d", rank));
             for (Map<String, Object> sector : getIndexSectors(rank))
@@ -64,6 +70,7 @@ public class NominatimUpdater {
         }
 
         updater.finish();
+        updating = false;
     }
 
     private List<Map<String, Object>> getIndexSectors(Integer rank) {
