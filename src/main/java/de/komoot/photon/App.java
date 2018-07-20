@@ -154,7 +154,7 @@ public class App {
         });
 
         get("/update-status", (Request request, Response response) -> {
-            return nominatimUpdater.isUpdating().toString();
+            return nominatimUpdater.isUpdating() ? "updating" : "";
         });
     }
 }
