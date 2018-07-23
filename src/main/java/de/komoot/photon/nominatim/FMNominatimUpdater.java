@@ -76,10 +76,7 @@ public class FMNominatimUpdater {
             JSONObject place = places.getJSONObject(i);
             final List<PhotonDoc> updatedDocs = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
             for (PhotonDoc doc : updatedDocs) {
-                if (!doc.isUsefulForIndex())
-                    updater.delete(doc.getPlaceId());
-
-                updater.updateOrCreate(doc);
+                updater.delete(doc.getPlaceId());
             }
             // updater.delete(place.getPlaceId());
         }
