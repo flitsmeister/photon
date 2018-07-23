@@ -150,7 +150,6 @@ public class App {
         nominatimUpdater.setUpdater(updater);
 
         post("/fm-nominatim-update", (Request request, Response response) -> {
-            System.out.println(request.body());
             JSONObject changes = new JSONObject(request.body());
             JSONArray delete = changes.getJSONArray("delete");
             JSONArray create = changes.getJSONArray("create");
