@@ -159,7 +159,7 @@ public class App {
         });
 
         get("/update-status", (Request request, Response response) -> {
-            return "";//nominatimUpdater.isUpdating() ? "updating" : "";
+            return nominatimUpdater.isUpdating() ? "updating" : "";
         });
     }
 }

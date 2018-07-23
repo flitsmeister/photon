@@ -28,6 +28,8 @@ public class FMNominatimUpdater {
     private final JdbcTemplate template;
     private final NominatimConnector exporter;
 
+    private Boolean updating = false;
+
     private Updater updater;
 
     public void setUpdater(Updater updater) {
@@ -35,15 +37,24 @@ public class FMNominatimUpdater {
     }
 
     public void update(JSONArray create, JSONArray modify, JSONArray delete) {
-        LOGGER.info(String.format("Starting %d news", create.length()));
-        this.update(create);
-        LOGGER.info(String.format("Starting %d updates", modify.length()));
-        this.update(modify);
-        LOGGER.info(String.format("Starting %d removes", delete.length()));
-        this.remove(delete);
+        updating = true;
+        try {
+            LOGGER.info(String.format("Starting %d news", create.length()));
+            this.update(create);
+            LOGGER.info(String.format("Starting %d updates", modify.length()));
+            this.update(modify);
+            LOGGER.info(String.format("Starting %d removes", delete.length()));
+            this.remove(delete);
 
-        LOGGER.info(String.format("Updating finised"));
-        updater.finish();
+            LOGGER.info(String.format("Updating finised"));
+            updater.finish();
+        } finally {
+            updating = false;
+        }
+    }
+
+    public Boolean isUpdating() {
+        return this.updating;
     }
 
     private void update(JSONArray places) {
