@@ -25,7 +25,6 @@ public class NominatimUpdater {
     private final Integer maxRank = 30;
     private final JdbcTemplate template;
     private final NominatimConnector exporter;
-    private Boolean updating = false;
 
     private Updater updater;
 
@@ -33,19 +32,13 @@ public class NominatimUpdater {
         this.updater = updater;
     }
 
-    public Boolean isUpdating() {
-        return updating;
-    }
-
     public void update() {
-        updating = true;
         for (Integer rank = this.minRank; rank <= this.maxRank; rank++) {
             LOGGER.info(String.format("Starting rank %d", rank));
             for (Map<String, Object> sector : getIndexSectors(rank))
                 for (UpdateRow place : getIndexSectorPlaces(rank, (Integer) sector.get("geometry_sector"))) {
 
-                    // Dont update nominatim indexes, multiple photons can update from the same one
-                    // template.update("update placex set indexed_status = 0 where place_id = ?", place.getPlaceId());
+                    template.update("update placex set indexed_status = 0 where place_id = ?", place.getPlaceId());
                     final PhotonDoc updatedDoc = exporter.getByPlaceId(place.getPlaceId());
 
                     switch (place.getIndexdStatus()) {
@@ -70,7 +63,6 @@ public class NominatimUpdater {
         }
 
         updater.finish();
-        updating = false;
     }
 
     private List<Map<String, Object>> getIndexSectors(Integer rank) {
