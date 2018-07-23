@@ -50,6 +50,7 @@ public class FMNominatimUpdater {
         for (int i = 0; i < places.length(); i++) {
             JSONObject place = places.getJSONObject(i);
             final PhotonDoc updatedDoc = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
+            if (updatedDoc == null) continue;
 
             if (!updatedDoc.isUsefulForIndex())
                 updater.delete(updatedDoc.getPlaceId());
@@ -62,6 +63,7 @@ public class FMNominatimUpdater {
         for (int i = 0; i < places.length(); i++) {
             JSONObject place = places.getJSONObject(i);
             final PhotonDoc updatedDoc = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
+            if (updatedDoc == null) continue;
 
             // updater.delete(place.getPlaceId());
         }

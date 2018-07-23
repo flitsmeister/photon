@@ -16,6 +16,7 @@ import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -251,7 +252,11 @@ public class NominatimConnector {
     }
 
     public PhotonDoc getByOsmId(long osmId, String osmType) {
-        return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE osm_id = ? AND osm_type = ?", new Object[]{osmId, osmType}, placeRowMapper).getBaseDoc();
+        try {
+            return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE osm_id = ? AND osm_type = ?", new Object[]{osmId, osmType}, placeRowMapper).getBaseDoc();
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     List<AddressRow> getAddresses(PhotonDoc doc) {
