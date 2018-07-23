@@ -49,22 +49,27 @@ public class FMNominatimUpdater {
     private void update(JSONArray places) {
         for (int i = 0; i < places.length(); i++) {
             JSONObject place = places.getJSONObject(i);
-            final PhotonDoc updatedDoc = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
-            if (updatedDoc == null) continue;
+            final List<PhotonDoc> updatedDocs = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
 
-            if (!updatedDoc.isUsefulForIndex())
-                updater.delete(updatedDoc.getPlaceId());
+            for (PhotonDoc doc : updatedDocs) {
+                if (!doc.isUsefulForIndex())
+                    updater.delete(doc.getPlaceId());
 
-            updater.updateOrCreate(updatedDoc);
+                updater.updateOrCreate(doc);
+            }
         }
     }
 
     private void remove(JSONArray places) {
         for (int i = 0; i < places.length(); i++) {
             JSONObject place = places.getJSONObject(i);
-            final PhotonDoc updatedDoc = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
-            if (updatedDoc == null) continue;
+            final List<PhotonDoc> updatedDocs = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
+            for (PhotonDoc doc : updatedDocs) {
+                if (!doc.isUsefulForIndex())
+                    updater.delete(doc.getPlaceId());
 
+                updater.updateOrCreate(doc);
+            }
             // updater.delete(place.getPlaceId());
         }
     }

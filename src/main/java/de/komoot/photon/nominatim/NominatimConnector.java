@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -251,12 +252,13 @@ public class NominatimConnector {
         return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper).getBaseDoc();
     }
 
-    public PhotonDoc getByOsmId(long osmId, String osmType) {
-        try {
-            return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE osm_id = ? AND osm_type = ?", new Object[]{osmId, osmType}, placeRowMapper).getBaseDoc();
-        } catch (EmptyResultDataAccessException e) {
-            return null;
+    public List<PhotonDoc> getByOsmId(long osmId, String osmType) {
+        List<NominatimResult> places = template.query("SELECT " + selectColsPlaceX + " FROM placex WHERE osm_id = ? AND osm_type = ?", new Object[]{osmId, osmType}, placeRowMapper);
+        List<PhotonDoc> result = new ArrayList<>();
+        for (NominatimResult place : places) {
+            result.add(place.getBaseDoc());
         }
+        return result;
     }
 
     List<AddressRow> getAddresses(PhotonDoc doc) {
