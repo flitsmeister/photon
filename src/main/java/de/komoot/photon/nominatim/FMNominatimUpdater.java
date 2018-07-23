@@ -35,21 +35,15 @@ public class FMNominatimUpdater {
     }
 
     public void update(JSONArray create, JSONArray modify, JSONArray delete) {
-        this.insert(create);
+        LOGGER.info(String.format("Starting %d news", create.length()));
+        this.update(create);
+        LOGGER.info(String.format("Starting %d updates", modify.length()));
         this.update(modify);
+        LOGGER.info(String.format("Starting %d removes", delete.length()));
         this.remove(delete);
 
+        LOGGER.info(String.format("Updating finised"));
         updater.finish();
-    }
-
-    private void insert(JSONArray places) {
-        for (int i = 0; i < places.length(); i++) {
-            JSONObject place = places.getJSONObject(i);
-            final PhotonDoc newDoc = exporter.getByOsmId(place.getLong("osm_id"), place.getString("osm_type"));
-
-            if (newDoc.isUsefulForIndex())
-                updater.create(newDoc);
-        }
     }
 
     private void update(JSONArray places) {
