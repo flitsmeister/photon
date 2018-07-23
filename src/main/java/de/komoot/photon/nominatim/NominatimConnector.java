@@ -250,6 +250,10 @@ public class NominatimConnector {
         return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper).getBaseDoc();
     }
 
+    public PhotonDoc getByOsmId(long osmId, String osmType) {
+        return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE osm_id = ? AND osm_type = ?", new Object[]{osmId, osmType}, placeRowMapper).getBaseDoc();
+    }
+
     List<AddressRow> getAddresses(PhotonDoc doc) {
         long placeId = doc.getPlaceId();
         if (doc.getRankSearch() > 28)
