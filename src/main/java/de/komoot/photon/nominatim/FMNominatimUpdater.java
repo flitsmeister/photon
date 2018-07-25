@@ -61,6 +61,7 @@ public class FMNominatimUpdater {
         for (int i = 0; i < places.length(); i++) {
             long placeId = places.getLong(i);
             final PhotonDoc doc = exporter.getByPlaceId(placeId);
+            if (doc == null) continue;
 
             if (!doc.isUsefulForIndex())
                 updater.delete(placeId);
