@@ -16,6 +16,8 @@ import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

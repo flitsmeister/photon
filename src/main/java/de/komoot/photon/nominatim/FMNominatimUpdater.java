@@ -13,18 +13,22 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.json.*;
+
 /**
  * Nominatim update logic
  *
  * @author felix
  */
 
-public class NominatimUpdater {
-    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(NominatimUpdater.class);
+public class FMNominatimUpdater {
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(FMNominatimUpdater.class);
     private final Integer minRank = 1;
     private final Integer maxRank = 30;
     private final JdbcTemplate template;
     private final NominatimConnector exporter;
+
+    private Boolean updating = false;
 
     private Updater updater;
 
@@ -32,37 +36,43 @@ public class NominatimUpdater {
         this.updater = updater;
     }
 
-    public void update() {
-        for (Integer rank = this.minRank; rank <= this.maxRank; rank++) {
-            LOGGER.info(String.format("Starting rank %d", rank));
-            for (Map<String, Object> sector : getIndexSectors(rank))
-                for (UpdateRow place : getIndexSectorPlaces(rank, (Integer) sector.get("geometry_sector"))) {
+    public void update(JSONArray create, JSONArray modify, JSONArray delete) {
+        updating = true;
+        try {
+            LOGGER.info(String.format("Starting %d news", create.length()));
+            this.update(create);
+            LOGGER.info(String.format("Starting %d updates", modify.length()));
+            this.update(modify);
+            LOGGER.info(String.format("Starting %d removes", delete.length()));
+            this.remove(delete);
 
-                    template.update("update placex set indexed_status = 0 where place_id = ?", place.getPlaceId());
-                    final PhotonDoc updatedDoc = exporter.getByPlaceId(place.getPlaceId());
-
-                    switch (place.getIndexdStatus()) {
-                        case 1:
-                            if (updatedDoc.isUsefulForIndex())
-                                updater.create(updatedDoc);
-                            break;
-                        case 2:
-                            if (!updatedDoc.isUsefulForIndex())
-                                updater.delete(place.getPlaceId());
-
-                            updater.updateOrCreate(updatedDoc);
-                            break;
-                        case 100:
-                            updater.delete(place.getPlaceId());
-                            break;
-                        default:
-                            LOGGER.error(String.format("Unknown index status %d", place.getIndexdStatus()));
-                            break;
-                    }
-                }
+            LOGGER.info(String.format("Updating finised"));
+            updater.finish();
+        } finally {
+            updating = false;
         }
+    }
 
-        updater.finish();
+    public Boolean isUpdating() {
+        return this.updating;
+    }
+
+    private void update(JSONArray places) {
+        for (int i = 0; i < places.length(); i++) {
+            long placeId = places.getLong(i);
+            final PhotonDoc doc = exporter.getByPlaceId(placeId);
+
+            if (!doc.isUsefulForIndex())
+                updater.delete(placeId);
+
+            updater.updateOrCreate(doc);
+        }
+    }
+
+    private void remove(JSONArray places) {
+        for (int i = 0; i < places.length(); i++) {
+            updater.delete(places.getLong(i));
+        }
     }
 
     private List<Map<String, Object>> getIndexSectors(Integer rank) {
@@ -85,7 +95,7 @@ public class NominatimUpdater {
 
     /**
      */
-    public NominatimUpdater(String host, int port, String database, String username, String password) {
+    public FMNominatimUpdater(String host, int port, String database, String username, String password) {
         BasicDataSource dataSource = new BasicDataSource();
 
         dataSource.setUrl(String.format("jdbc:postgresql://%s:%d/%s", host, port, database));
