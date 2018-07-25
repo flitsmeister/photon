@@ -249,7 +249,11 @@ public class NominatimConnector {
     }
 
     public PhotonDoc getByPlaceId(long placeId) {
-        return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper).getBaseDoc();
+        try {
+            return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper).getBaseDoc();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     List<AddressRow> getAddresses(PhotonDoc doc) {
