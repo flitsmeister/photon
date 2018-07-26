@@ -250,7 +250,9 @@ public class NominatimConnector {
 
     public PhotonDoc getByPlaceId(long placeId) {
         try {
-            return template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper).getBaseDoc();
+            PhotonDoc doc = template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper).getBaseDoc();
+            this.completePlace(doc);
+            return doc;
         } catch (Exception e) {
             return null;
         }
