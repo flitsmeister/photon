@@ -61,6 +61,7 @@ public class FMNominatimUpdater {
         for (int i = 0; i < places.length(); i++) {
             long placeId = places.getLong(i);
             final List<PhotonDoc> docs = exporter.getDocsByPlaceId(placeId);
+            if (docs == null) continue;
             for (PhotonDoc doc : docs) {
                 if (doc == null) continue;
 
