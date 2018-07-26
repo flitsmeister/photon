@@ -248,11 +248,11 @@ public class NominatimConnector {
         this.importer = importer;
     }
 
-    public PhotonDoc getByPlaceId(long placeId) {
+    public List<PhotonDoc> getByPlaceId(long placeId) {
         try {
-            PhotonDoc doc = template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper).getBaseDoc();
-            this.completePlace(doc);
-            return doc;
+            NominatimResult docs = template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[]{placeId}, placeRowMapper);
+            completePlace(docs.getBaseDoc());
+            return docs.getDocsWithHousenumber();
         } catch (Exception e) {
             return null;
         }
