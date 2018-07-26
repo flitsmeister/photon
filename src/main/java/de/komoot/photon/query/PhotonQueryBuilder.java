@@ -123,7 +123,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         params.put("lat", point.getY());
 
         scale = Math.abs(scale);
-        String strCode = "double dist = doc['coordinate'].planeDistance(params.lat, params.lon); " +
+        String strCode = "double dist = doc['coordinate'] == null ? 0 : doc['coordinate'].planeDistance(params.lat, params.lon); " +
                 "double score = 0.1 + " + scale + " / (1.0 + dist * 0.001 / 10.0); " +
                 "score";
         ScriptScoreFunctionBuilder builder = ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, params));
