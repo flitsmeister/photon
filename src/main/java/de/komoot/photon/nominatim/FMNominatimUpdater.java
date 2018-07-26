@@ -60,13 +60,15 @@ public class FMNominatimUpdater {
     private void update(JSONArray places) {
         for (int i = 0; i < places.length(); i++) {
             long placeId = places.getLong(i);
-            final PhotonDoc doc = exporter.getByPlaceId(placeId);
-            if (doc == null) continue;
+            final List<PhotonDoc> docs = exporter.getDocsByPlaceId(placeId);
+            for (PhotonDoc doc : docs) {
+                if (doc == null) continue;
 
-            if (!doc.isUsefulForIndex())
-                updater.delete(placeId);
+                if (!doc.isUsefulForIndex())
+                    updater.delete(placeId);
 
-            updater.updateOrCreate(doc);
+                updater.updateOrCreate(doc);
+            }
         }
     }
 
