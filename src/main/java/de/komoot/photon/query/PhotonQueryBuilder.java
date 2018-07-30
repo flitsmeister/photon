@@ -89,7 +89,11 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         m_queryBuilderForTopLevelFilter = QueryBuilders.boolQuery()
                 .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
                 .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
-                .should(QueryBuilders.existsQuery(String.format("name.%s.raw", language)));
+                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
+                    .must(QueryBuilders.matchQuery("osm_key", "place"))
+                    .must(QueryBuilders.matchQuery("osm_value", "house"))
+                    .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
+                ));
         // @formatter:on
 
         state = State.PLAIN;
@@ -123,7 +127,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         params.put("lat", point.getY());
 
         scale = Math.abs(scale);
-        String strCode = "double dist = doc['coordinate'].planeDistance(params.lat, params.lon); " +
+        String strCode = "double dist = (doc == null || doc['coordinate'] == null || doc['coordinate'].getValue() == null) ? 10000 : doc['coordinate'].planeDistance(params.lat, params.lon); " +
                 "double score = 0.1 + " + scale + " / (1.0 + dist * 0.001 / 10.0); " +
                 "score";
         ScriptScoreFunctionBuilder builder = ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, params));
