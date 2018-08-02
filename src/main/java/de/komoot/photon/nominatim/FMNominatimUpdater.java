@@ -65,8 +65,10 @@ public class FMNominatimUpdater {
             for (PhotonDoc doc : docs) {
                 if (doc == null) continue;
 
-                if (!doc.isUsefulForIndex())
+                if (!doc.isUsefulForIndex()) {
                     updater.delete(placeId);
+                    return;
+                }
 
                 updater.updateOrCreate(doc);
             }
