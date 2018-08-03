@@ -67,7 +67,7 @@ public class FMNominatimUpdater {
 
                 if (!doc.isUsefulForIndex()) {
                     updater.delete(placeId);
-                    return;
+                    continue;
                 }
 
                 updater.updateOrCreate(doc);
