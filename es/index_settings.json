@@ -60,7 +60,7 @@
 				"filter": [
 					"lowercase",
 					"preserving_word_delimiter"],
-				"tokenizer": "standard" 
+				"tokenizer": "standard"
 			}
 		},
 		"tokenizer": {
@@ -70,7 +70,8 @@
 				"max_gram": 100,
 				"token_chars": [
 					"letter",
-					"digit"
+					"digit",
+					"punctuation"
 				]
 			}
 		},
@@ -91,9 +92,9 @@
 				"min": "2",
 				"type": "length"
 			},
-			"preserving_word_delimiter": { 
+			"preserving_word_delimiter": {
 				"type": "word_delimiter",
-				"preserve_original": "true"
+				"catenate_all": true
 			}
 		}
 	}
