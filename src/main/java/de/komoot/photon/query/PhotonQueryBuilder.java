@@ -293,8 +293,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     @Override
     public TagFilterQueryBuilder withLenientMatch() {
-        defaultMatchQueryBuilder.fuzziness(Fuzziness.ONE).minimumShouldMatch("-1");
-        languageMatchQueryBuilder.fuzziness(Fuzziness.ONE).minimumShouldMatch("-1");
+        defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
+        languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
         return this;
     }
 
