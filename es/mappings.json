@@ -126,6 +126,45 @@
 							"collector.default"
 						]
 					},
+					"left": {
+						"type": "text",
+						"index": false,
+						"fields": {
+							"raw": {
+								"type": "text",
+								"analyzer": "index_raw"
+							}
+						},
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"right": {
+						"type": "text",
+						"index": false,
+						"fields": {
+							"raw": {
+								"type": "text",
+								"analyzer": "index_raw"
+							}
+						},
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"short": {
+						"type": "text",
+						"index": false,
+						"fields": {
+							"raw": {
+								"type": "text",
+								"analyzer": "index_raw"
+							}
+						},
+						"copy_to": [
+							"collector.default"
+						]
+					},
 					"default": {
 						"type": "text",
 						"index": false,
