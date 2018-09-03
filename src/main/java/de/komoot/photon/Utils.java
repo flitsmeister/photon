@@ -106,7 +106,6 @@ public class Utils {
         if (name.get("name:right") != null)
             fNames.put("right", name.get("name:left"));
 
-        System.out.println(name);
 
         write(builder, fNames, "name");
     }
