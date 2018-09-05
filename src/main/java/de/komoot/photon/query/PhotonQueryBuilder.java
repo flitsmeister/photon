@@ -67,12 +67,17 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
         // @formatter:off
         m_query4QueryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.boolQuery().should(defaultMatchQueryBuilder).should(languageMatchQueryBuilder)
-                        .minimumShouldMatch("1"))
-                .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
-                        .analyzer("search_raw"))
+                .must(QueryBuilders.boolQuery()
+                    .should(defaultMatchQueryBuilder)
+                    .should(languageMatchQueryBuilder)
+                    .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
+                        .analyzer("search_raw").minimumShouldMatch("100%"))
+                    .minimumShouldMatch("1")
+                )
                 .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
-                        .analyzer("search_raw"));
+                        .analyzer("search_raw").minimumShouldMatch("100%"))
+                .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
+                        .analyzer("search_raw").minimumShouldMatch("100%"));
         // @formatter:on
 
         // this is former general-score, now inline
