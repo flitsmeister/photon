@@ -126,6 +126,19 @@
 							"collector.default"
 						]
 					},
+					"ref": {
+						"type": "text",
+						"index": false,
+						"fields": {
+							"raw": {
+								"type": "text",
+								"analyzer": "index_raw"
+							}
+						},
+						"copy_to": [
+							"collector.default"
+						]
+					},
 					"left": {
 						"type": "text",
 						"index": false,

@@ -77,7 +77,7 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
             return map.get(lang);
         }
 
-        return map.get("default");
+        return map.get("ref") != null ? map.get("ref") : map.get("default");
     }
 
     private JSONObject getPoint(Map<String, Object> source) {
