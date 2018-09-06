@@ -223,9 +223,11 @@ public class Server {
                 propertiesObject = addToCollector("city", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("context", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("country", propertiesObject, copyToCollectorObject, lang);
-                propertiesObject = addToCollector("state", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("street", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("name", propertiesObject, nameToCollectorObject, lang);
+
+                JSONObject copyToStateObject = new JSONObject("{\"type\":\"text\",\"index\":false,\"copy_to\":[\"state.raw\"]}");
+                propertiesObject = addToCollector("state", propertiesObject, copyToStateObject, lang);
 
                 // add language specific collector to default for name
                 JSONObject name = propertiesObject.optJSONObject("name");
