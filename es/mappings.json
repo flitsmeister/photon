@@ -116,12 +116,6 @@
 					"alt": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -129,12 +123,6 @@
 					"ref": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -155,12 +143,6 @@
 					"right": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -168,12 +150,6 @@
 					"short": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -206,12 +182,6 @@
 					"int": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -219,12 +189,6 @@
 					"loc": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -232,12 +196,6 @@
 					"old": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -245,12 +203,6 @@
 					"reg": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
