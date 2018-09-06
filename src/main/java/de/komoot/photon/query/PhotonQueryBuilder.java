@@ -39,8 +39,6 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     private Integer limit = 50;
 
-    private BoolQueryBuilder m_queryBuilderForTopLevelFilter;
-
     private State state;
 
     private BoolQueryBuilder orQueryBuilderForIncludeTagFiltering = null;
@@ -67,12 +65,27 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
         // @formatter:off
         m_query4QueryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.boolQuery().should(defaultMatchQueryBuilder).should(languageMatchQueryBuilder)
-                        .minimumShouldMatch("1"))
-                .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
-                        .analyzer("search_raw"))
+                .must(QueryBuilders.boolQuery()
+                    .should(defaultMatchQueryBuilder)
+                    .should(languageMatchQueryBuilder)
+                    .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
+                        .analyzer("search_raw").minimumShouldMatch("100%"))
+                )
+                .must(QueryBuilders.boolQuery()
+                    .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
+                    .should(QueryBuilders.matchQuery("housenumber", query).boost(200).analyzer("standard"))
+                    .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("osm_key", "place"))
+                        .must(QueryBuilders.matchQuery("osm_value", "house"))
+                        .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
+                    ))
+                )
                 .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
-                        .analyzer("search_raw"));
+                        .analyzer("search_raw").minimumShouldMatch("100%"))
+                .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
+                        .analyzer("search_raw").minimumShouldMatch("100%"))
+                .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2).boost(50)
+                        .analyzer("search_raw").minimumShouldMatch("100%"));
         // @formatter:on
 
         // this is former general-score, now inline
@@ -84,17 +97,6 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
         m_finalQueryWithoutTagFilterBuilder = new FunctionScoreQueryBuilder(m_query4QueryBuilder, m_alFilterFunction4QueryBuilder.toArray(new FilterFunctionBuilder[0]))
                 .boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MULTIPLY);
-
-        // @formatter:off
-        m_queryBuilderForTopLevelFilter = QueryBuilders.boolQuery()
-                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
-                .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
-                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
-                    .must(QueryBuilders.matchQuery("osm_key", "place"))
-                    .must(QueryBuilders.matchQuery("osm_value", "house"))
-                    .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
-                ));
-        // @formatter:on
 
         state = State.PLAIN;
     }
@@ -310,7 +312,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     public QueryBuilder buildQuery() {
         if (state.equals(State.FINISHED)) return m_finalQueryBuilder;
 
-        m_finalQueryBuilder = QueryBuilders.boolQuery().must(m_finalQueryWithoutTagFilterBuilder).filter(m_queryBuilderForTopLevelFilter);
+        m_finalQueryBuilder = QueryBuilders.boolQuery().must(m_finalQueryWithoutTagFilterBuilder);
 
         if (state.equals(State.FILTERED)) {
 

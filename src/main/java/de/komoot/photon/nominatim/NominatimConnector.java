@@ -197,7 +197,14 @@ public class NominatimConnector {
                     rs.getInt("rank_search")
             );
 
-            doc.setPostcode(rs.getString("postcode"));
+            Map<String, String> address = DBUtils.getMap(rs, "address");
+            doc.setPostcode(address.get("postcode") != null ? address.get("postcode") : rs.getString("postcode"));
+
+            if (address.get("street") != null) {
+                doc.setStreet(new HashMap<String, String>() {
+                    { put("name", address.get("street")); }
+                });
+            }
             doc.setCountry(getCountryNames(rs.getString("country_code")));
 
             NominatimResult result = new NominatimResult(doc);
@@ -206,7 +213,7 @@ public class NominatimConnector {
             return result;
         }
     };
-    private final String selectColsPlaceX = "place_id, osm_type, osm_id, class, type, name, housenumber, postcode, extratags, ST_Envelope(geometry) AS bbox, parent_place_id, linked_place_id, rank_search, importance, country_code, centroid";
+    private final String selectColsPlaceX = "place_id, osm_type, osm_id, class, type, name, address, housenumber, postcode, extratags, ST_Envelope(geometry) AS bbox, parent_place_id, linked_place_id, rank_search, importance, country_code, centroid";
     private Importer importer;
 
     private Map<String, String> getCountryNames(String countrycode) {

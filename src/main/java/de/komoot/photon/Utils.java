@@ -106,6 +106,8 @@ public class Utils {
         if (name.get("name:right") != null)
             fNames.put("right", name.get("name:left"));
 
+        if (name.get("ref") != null)
+            fNames.put("ref", name.get("ref"));
 
         write(builder, fNames, "name");
     }
