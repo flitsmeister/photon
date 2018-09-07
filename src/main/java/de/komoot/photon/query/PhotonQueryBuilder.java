@@ -70,6 +70,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                     .should(languageMatchQueryBuilder)
                     .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
                         .analyzer("search_raw").minimumShouldMatch("100%"))
+                    .should(QueryBuilders.matchQuery("state.raw", query)
+                        .analyzer("search_raw").boost(0.000001f))
                 )
                 .must(QueryBuilders.boolQuery()
                     .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
