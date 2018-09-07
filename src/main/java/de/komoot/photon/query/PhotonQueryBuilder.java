@@ -37,6 +37,8 @@ import static com.google.common.collect.Maps.newHashMap;
 public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     private FunctionScoreQueryBuilder m_finalQueryWithoutTagFilterBuilder;
 
+    private String query;
+
     private Integer limit = 50;
 
     private State state;
@@ -55,10 +57,12 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     protected ArrayList<FilterFunctionBuilder> m_alFilterFunction4QueryBuilder = new ArrayList<>(1);
 
-    protected QueryBuilder m_query4QueryBuilder;
+    protected BoolQueryBuilder m_query4QueryBuilder;
 
 
     private PhotonQueryBuilder(String query, String language) {
+        this.query = query;
+
         defaultMatchQueryBuilder =
                 QueryBuilders.matchQuery("collector.default", query).fuzziness(Fuzziness.ZERO).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");
 
@@ -74,8 +78,6 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                     .should(defaultMatchQueryBuilder)
                     .should(languageMatchQueryBuilder)
                     .should(fuzzyLanguageMatchQueryBuilder)
-                    .should(QueryBuilders.matchQuery("state.raw", query)
-                        .analyzer("search_raw").boost(0.000001f))
                 )
                 .must(QueryBuilders.boolQuery()
                     .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
@@ -305,6 +307,10 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
         languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
         fuzzyLanguageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
+
+        m_query4QueryBuilder
+            .should(QueryBuilders.matchQuery("state.raw", this.query).analyzer("search_raw").boost(0.000001f));
+
         return this;
     }
 
