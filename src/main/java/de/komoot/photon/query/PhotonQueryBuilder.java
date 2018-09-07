@@ -49,6 +49,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     private MatchQueryBuilder languageMatchQueryBuilder;
 
+    private MatchQueryBuilder fuzzyLanguageMatchQueryBuilder;
+
     private BoolQueryBuilder m_finalQueryBuilder;
 
     protected ArrayList<FilterFunctionBuilder> m_alFilterFunction4QueryBuilder = new ArrayList<>(1);
@@ -63,13 +65,15 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         languageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.ngrams", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
                 .analyzer("search_ngram").minimumShouldMatch("100%");
 
+        fuzzyLanguageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
+                        .analyzer("search_raw").minimumShouldMatch("100%");
+
         // @formatter:off
         m_query4QueryBuilder = QueryBuilders.boolQuery()
                 .must(QueryBuilders.boolQuery()
                     .should(defaultMatchQueryBuilder)
                     .should(languageMatchQueryBuilder)
-                    .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
-                        .analyzer("search_raw").minimumShouldMatch("100%"))
+                    .should(fuzzyLanguageMatchQueryBuilder)
                     .should(QueryBuilders.matchQuery("state.raw", query)
                         .analyzer("search_raw").boost(0.000001f))
                 )
@@ -291,6 +295,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     public TagFilterQueryBuilder withStrictMatch() {
         defaultMatchQueryBuilder.minimumShouldMatch("100%");
         languageMatchQueryBuilder.minimumShouldMatch("100%");
+        fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("100%");
         return this;
     }
 
@@ -299,6 +304,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     public TagFilterQueryBuilder withLenientMatch() {
         defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
         languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
+        fuzzyLanguageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
         return this;
     }
 
