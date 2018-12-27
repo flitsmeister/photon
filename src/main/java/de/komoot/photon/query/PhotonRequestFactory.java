@@ -64,7 +64,8 @@ public class PhotonRequestFactory {
                 throw new BadRequestException(400, "invalid parameter 'location_bias_scale' must be a number");
             }
 
-        Boolean lenient = webRequest.queryParams("lenient").equals("true");
+        String lenientStr = webRequest.queryParams("lenient");
+        Boolean lenient = lenientStr != null && lenientStr.equals("true");
 
         QueryParamsMap tagFiltersQueryMap = webRequest.queryMap("osm_tag");
         if (!new CheckIfFilteredRequest().execute(tagFiltersQueryMap)) {
