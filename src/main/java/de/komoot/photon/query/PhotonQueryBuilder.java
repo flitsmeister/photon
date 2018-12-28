@@ -308,8 +308,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     @Override
     public TagFilterQueryBuilder withLenientMatch() {
-        defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
-        languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
+        defaultMatchQueryBuilder.minimumShouldMatch("-1");
+        languageMatchQueryBuilder.minimumShouldMatch("-1");
         fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("-1");
 
         m_query4QueryBuilder
@@ -318,6 +318,12 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         return this;
     }
 
+    @Override
+    public TagFilterQueryBuilder withFuzzyMatch() {
+        defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        return this;
+    }
 
     /**
      * When this method is called, all filters are placed inside their {@link OrQueryBuilder OR} or {@link AndQueryBuilder AND} containers and the top level filter

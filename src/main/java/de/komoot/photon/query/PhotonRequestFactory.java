@@ -64,14 +64,17 @@ public class PhotonRequestFactory {
                 throw new BadRequestException(400, "invalid parameter 'location_bias_scale' must be a number");
             }
 
+        String fuzzyStr = webRequest.queryParams("fuzzy");
+        Boolean fuzzy = fuzzyStr != null && fuzzyStr.equals("true");
+
         String lenientStr = webRequest.queryParams("lenient");
         Boolean lenient = lenientStr != null && lenientStr.equals("true");
 
         QueryParamsMap tagFiltersQueryMap = webRequest.queryMap("osm_tag");
         if (!new CheckIfFilteredRequest().execute(tagFiltersQueryMap)) {
-            return (R) new PhotonRequest(query, limit, locationForBias, scale, language, lenient);
+            return (R) new PhotonRequest(query, limit, locationForBias, scale, language, fuzzy, lenient);
         }
-        FilteredPhotonRequest photonRequest = new FilteredPhotonRequest(query, limit, locationForBias, scale, language, lenient);
+        FilteredPhotonRequest photonRequest = new FilteredPhotonRequest(query, limit, locationForBias, scale, language, fuzzy, lenient);
         String[] tagFilters = tagFiltersQueryMap.values();
         setUpTagFilters(photonRequest, tagFilters);
 

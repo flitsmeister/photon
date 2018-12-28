@@ -36,6 +36,9 @@ public class FilteredPhotonRequestHandler extends AbstractPhotonRequestHandler<F
                 withoutValues(excludeValues).
                 withTagsNotValues(excludeTagValues).
                 withLocationBias(photonRequest.getLocationForBias(), photonRequest.getScaleForBias());
+        if (photonRequest.isFuzzy()) {
+            queryBuilder.withFuzzyMatch();
+        }
         if (photonRequest.isLenient()) {
             queryBuilder.withLenientMatch();
         }
