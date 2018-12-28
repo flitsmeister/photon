@@ -10,9 +10,6 @@
 				"filter": [
 					"preserving_word_delimiter",
 					"lowercase",
-					"greek_lowercase",
-					"irish_lowercase",
-					"turkish_lowercase",
 					"german_normalization",
 					"arabic_normalization",
 					"scandinavian_normalization",
@@ -29,9 +26,6 @@
 				"tokenizer": "standard",
 				"filter": [
 					"lowercase",
-					"greek_lowercase",
-					"irish_lowercase",
-					"turkish_lowercase",
 					"german_normalization",
 					"arabic_normalization",
 					"scandinavian_normalization",
@@ -46,9 +40,6 @@
 				"filter": [
 					"word_delimiter",
 					"lowercase",
-					"greek_lowercase",
-					"irish_lowercase",
-					"turkish_lowercase",
 					"german_normalization",
 					"arabic_normalization",
 					"scandinavian_normalization",
@@ -65,9 +56,6 @@
 				"filter": [
 					"word_delimiter",
 					"lowercase",
-					"greek_lowercase",
-					"irish_lowercase",
-					"turkish_lowercase",
 					"german_normalization",
 					"arabic_normalization",
 					"scandinavian_normalization",

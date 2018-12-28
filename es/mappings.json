@@ -157,6 +157,12 @@
 					"default": {
 						"type": "text",
 						"index": false,
+						"fields": {
+							"raw": {
+								"type": "text",
+								"analyzer": "index_raw"
+							}
+						},
 						"copy_to": [
 							"collector.default"
 						]

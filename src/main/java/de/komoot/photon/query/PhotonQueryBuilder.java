@@ -93,9 +93,11 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                     ))
                 )
                 .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
-                        .analyzer("search_raw").minimumShouldMatch("100%"))
+                        .analyzer("search_raw"))
                 .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
-                        .analyzer("search_raw").minimumShouldMatch("100%"));
+                        .analyzer("search_raw"))
+                .should(QueryBuilders.matchQuery("name.default.raw", query).boost(200)
+                        .analyzer("search_raw").minimumShouldMatch("2<75%"));
         // @formatter:on
 
         // this is former general-score, now inline
