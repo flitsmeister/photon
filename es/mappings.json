@@ -19,6 +19,13 @@
 							"collector.default"
 						]
 					},
+					"alt": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
 					"en": {
 						"type": "text",
 						"index": false,
@@ -84,6 +91,13 @@
 			"country": {
 				"properties": {
 					"default": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"alt": {
 						"type": "text",
 						"index": false,
 						"copy_to": [
@@ -262,6 +276,13 @@
 			"street": {
 				"properties": {
 					"default": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"alt": {
 						"type": "text",
 						"index": false,
 						"copy_to": [
