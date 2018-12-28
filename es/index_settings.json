@@ -6,13 +6,20 @@
 					"punctuationgreedy",
 					"remove_ws_hnr_suffix"
 				],
-				"tokenizer": "edge_ngram",
+				"tokenizer": "keyword",
 				"filter": [
 					"preserving_word_delimiter",
 					"lowercase",
+					"greek_lowercase",
+					"irish_lowercase",
+					"turkish_lowercase",
 					"german_normalization",
+					"arabic_normalization",
+					"scandinavian_normalization",
+					"serbian_normalization",
 					"asciifolding",
-					"unique"
+					"unique",
+					"autocomplete_filter"
 				]
 			},
 			"search_ngram": {
@@ -22,7 +29,13 @@
 				"tokenizer": "standard",
 				"filter": [
 					"lowercase",
+					"greek_lowercase",
+					"irish_lowercase",
+					"turkish_lowercase",
 					"german_normalization",
+					"arabic_normalization",
+					"scandinavian_normalization",
+					"serbian_normalization",
 					"asciifolding"
 				]
 			},
@@ -33,7 +46,13 @@
 				"filter": [
 					"word_delimiter",
 					"lowercase",
+					"greek_lowercase",
+					"irish_lowercase",
+					"turkish_lowercase",
 					"german_normalization",
+					"arabic_normalization",
+					"scandinavian_normalization",
+					"serbian_normalization",
 					"asciifolding",
 					"unique"
 				],
@@ -46,7 +65,13 @@
 				"filter": [
 					"word_delimiter",
 					"lowercase",
+					"greek_lowercase",
+					"irish_lowercase",
+					"turkish_lowercase",
 					"german_normalization",
+					"arabic_normalization",
+					"scandinavian_normalization",
+					"serbian_normalization",
 					"asciifolding",
 					"unique"
 				],
@@ -61,18 +86,6 @@
 					"lowercase",
 					"preserving_word_delimiter"],
 				"tokenizer": "standard"
-			}
-		},
-		"tokenizer": {
-			"edge_ngram": {
-				"type": "edge_ngram",
-				"min_gram": 1,
-				"max_gram": 100,
-				"token_chars": [
-					"letter",
-					"digit",
-					"punctuation"
-				]
 			}
 		},
 		"char_filter": {
@@ -95,6 +108,16 @@
 			"preserving_word_delimiter": {
 				"type": "word_delimiter",
 				"catenate_all": true
+			},
+			"autocomplete_filter": {
+				"type": "edge_ngram",
+				"min_gram": "1",
+				"max_gram": "100",
+				"token_chars": [
+					"letter",
+					"digit",
+					"punctuation"
+				]
 			}
 		}
 	}
