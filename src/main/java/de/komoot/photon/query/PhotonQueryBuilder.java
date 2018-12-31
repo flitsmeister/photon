@@ -41,6 +41,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     private Integer limit = 50;
 
+    private final String matchAllQuery = "*";
+
     private State state;
 
     private BoolQueryBuilder orQueryBuilderForIncludeTagFiltering = null;
@@ -63,45 +65,46 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     private PhotonQueryBuilder(String query, String language) {
         this.query = query;
 
-        defaultMatchQueryBuilder =
-                QueryBuilders.matchQuery("collector.default", query).fuzziness(Fuzziness.ZERO).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");
-
-        languageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.ngrams", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
-                .analyzer("search_ngram").minimumShouldMatch("100%");
-
-        fuzzyLanguageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
-                        .analyzer("search_raw").minimumShouldMatch("100%");
-
-        // @formatter:off
-        m_query4QueryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.boolQuery()
-                    .should(defaultMatchQueryBuilder)
-                    .should(languageMatchQueryBuilder)
-                    .should(fuzzyLanguageMatchQueryBuilder)
-                )
-                .must(QueryBuilders.boolQuery()
-                    .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
-                    .should(QueryBuilders.matchQuery("housenumber", query).boost(200).analyzer("standard"))
-                    .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
-                        .must(QueryBuilders.matchQuery("osm_key", "place"))
-                        .must(QueryBuilders.matchQuery("osm_value", "house"))
-                        .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
-                    ).mustNot(QueryBuilders.boolQuery()
-                        .must(QueryBuilders.matchQuery("osm_key", "building"))
-                        .must(QueryBuilders.matchQuery("osm_value", "yes"))
-                        .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
-                    ))
-                )
-                .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
-                        .analyzer("search_raw").minimumShouldMatch("100%"))
-                .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
-                        .analyzer("search_raw").minimumShouldMatch("100%"));
-                //.should(QueryBuilders.matchQuery("name.default.raw", query).boost(200)
-                //        .analyzer("search_raw").minimumShouldMatch("2<75%"));
-        // @formatter:on
-
-        if (this.query.equals("")) {
+        if (this.query.equals(matchAllQuery)) {
             m_query4QueryBuilder = QueryBuilders.matchAllQuery();
+        } else {
+
+            defaultMatchQueryBuilder =
+                    QueryBuilders.matchQuery("collector.default", query).fuzziness(Fuzziness.ZERO).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");
+
+            languageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.ngrams", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
+                    .analyzer("search_ngram").minimumShouldMatch("100%");
+
+            fuzzyLanguageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
+                            .analyzer("search_raw").minimumShouldMatch("100%");
+
+            // @formatter:off
+            m_query4QueryBuilder = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.boolQuery()
+                        .should(defaultMatchQueryBuilder)
+                        .should(languageMatchQueryBuilder)
+                        .should(fuzzyLanguageMatchQueryBuilder)
+                    )
+                    .must(QueryBuilders.boolQuery()
+                        .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
+                        .should(QueryBuilders.matchQuery("housenumber", query).boost(200).analyzer("standard"))
+                        .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
+                            .must(QueryBuilders.matchQuery("osm_key", "place"))
+                            .must(QueryBuilders.matchQuery("osm_value", "house"))
+                            .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
+                        ).mustNot(QueryBuilders.boolQuery()
+                            .must(QueryBuilders.matchQuery("osm_key", "building"))
+                            .must(QueryBuilders.matchQuery("osm_value", "yes"))
+                            .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
+                        ))
+                    )
+                    .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
+                            .analyzer("search_raw").minimumShouldMatch("100%"))
+                    .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
+                            .analyzer("search_raw").minimumShouldMatch("100%"));
+                    //.should(QueryBuilders.matchQuery("name.default.raw", query).boost(200)
+                    //        .analyzer("search_raw").minimumShouldMatch("2<75%"));
+            // @formatter:on
         }
 
         // this is former general-score, now inline
@@ -316,7 +319,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         languageMatchQueryBuilder.minimumShouldMatch("-1");
         fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("-1");
 
-        if (!this.query.equals(""))
+        if (m_query4QueryBuilder instanceof BoolQueryBuilder)
             ((BoolQueryBuilder) m_query4QueryBuilder).should(QueryBuilders.matchQuery("state.raw", this.query).analyzer("search_raw").boost(0.000001f));
 
         return this;
