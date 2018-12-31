@@ -57,7 +57,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     protected ArrayList<FilterFunctionBuilder> m_alFilterFunction4QueryBuilder = new ArrayList<>(1);
 
-    protected BoolQueryBuilder m_query4QueryBuilder;
+    protected QueryBuilder m_query4QueryBuilder;
 
 
     private PhotonQueryBuilder(String query, String language) {
@@ -99,6 +99,10 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                 //.should(QueryBuilders.matchQuery("name.default.raw", query).boost(200)
                 //        .analyzer("search_raw").minimumShouldMatch("2<75%"));
         // @formatter:on
+
+        if (this.query.equals("")) {
+            m_query4QueryBuilder = QueryBuilders.matchAllQuery();
+        }
 
         // this is former general-score, now inline
         String strCode = "double score = 1 + doc['importance'].value * 100; score";
@@ -312,8 +316,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         languageMatchQueryBuilder.minimumShouldMatch("-1");
         fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("-1");
 
-        m_query4QueryBuilder
-            .should(QueryBuilders.matchQuery("state.raw", this.query).analyzer("search_raw").boost(0.000001f));
+        if (!this.query.equals(""))
+            ((BoolQueryBuilder) m_query4QueryBuilder).should(QueryBuilders.matchQuery("state.raw", this.query).analyzer("search_raw").boost(0.000001f));
 
         return this;
     }
