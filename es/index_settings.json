@@ -24,9 +24,6 @@
 				"filter": [
 					"lowercase",
 					"german_normalization",
-					"arabic_normalization",
-					"scandinavian_normalization",
-					"serbian_normalization",
 					"asciifolding"
 				]
 			},
