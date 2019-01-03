@@ -52,7 +52,7 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
                     String localised = getLocalised(source, key, lang);
                     String defaultValue = getLocalised(source, key, null);
                     properties.put(key, localised);
-                    if (!localised.equals(defaultValue))
+                    if (defaultValue != null && (localised == null || !localised.equals(defaultValue)))
                         properties.put(key + ":default", defaultValue);
                 }
             }
