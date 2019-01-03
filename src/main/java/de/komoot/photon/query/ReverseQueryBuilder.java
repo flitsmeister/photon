@@ -111,6 +111,12 @@ public class ReverseQueryBuilder implements TagFilterQueryBuilder {
     }
 
     @Override
+    public TagFilterQueryBuilder withFuzzyMatch() {
+        throw new RuntimeException(new NoSuchMethodException("this method is not implemented (NOOP)"));
+    }
+
+
+    @Override
     public QueryBuilder buildQuery() {
         QueryBuilder fb = QueryBuilders.geoDistanceQuery("coordinate").point(location.getY(), location.getX())
                 .distance(radius, DistanceUnit.KILOMETERS);

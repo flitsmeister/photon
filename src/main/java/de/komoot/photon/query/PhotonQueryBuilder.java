@@ -86,12 +86,18 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                         .must(QueryBuilders.matchQuery("osm_key", "place"))
                         .must(QueryBuilders.matchQuery("osm_value", "house"))
                         .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
+                    ).mustNot(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery("osm_key", "building"))
+                        .must(QueryBuilders.matchQuery("osm_value", "yes"))
+                        .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
                     ))
                 )
                 .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
                         .analyzer("search_raw").minimumShouldMatch("100%"))
                 .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
                         .analyzer("search_raw").minimumShouldMatch("100%"));
+                //.should(QueryBuilders.matchQuery("name.default.raw", query).boost(200)
+                //        .analyzer("search_raw").minimumShouldMatch("2<75%"));
         // @formatter:on
 
         // this is former general-score, now inline
@@ -302,9 +308,9 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     @Override
     public TagFilterQueryBuilder withLenientMatch() {
-        defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
-        languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
-        fuzzyLanguageMatchQueryBuilder.fuzziness(Fuzziness.AUTO).minimumShouldMatch("-1");
+        defaultMatchQueryBuilder.minimumShouldMatch("-1");
+        languageMatchQueryBuilder.minimumShouldMatch("-1");
+        fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("-1");
 
         m_query4QueryBuilder
             .should(QueryBuilders.matchQuery("state.raw", this.query).analyzer("search_raw").boost(0.000001f));
@@ -312,6 +318,12 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         return this;
     }
 
+    @Override
+    public TagFilterQueryBuilder withFuzzyMatch() {
+        defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        return this;
+    }
 
     /**
      * When this method is called, all filters are placed inside their {@link OrQueryBuilder OR} or {@link AndQueryBuilder AND} containers and the top level filter

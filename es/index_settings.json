@@ -6,13 +6,14 @@
 					"punctuationgreedy",
 					"remove_ws_hnr_suffix"
 				],
-				"tokenizer": "edge_ngram",
+				"tokenizer": "keyword",
 				"filter": [
 					"preserving_word_delimiter",
 					"lowercase",
 					"german_normalization",
 					"asciifolding",
-					"unique"
+					"unique",
+					"autocomplete_filter"
 				]
 			},
 			"search_ngram": {
@@ -63,18 +64,6 @@
 				"tokenizer": "standard"
 			}
 		},
-		"tokenizer": {
-			"edge_ngram": {
-				"type": "edge_ngram",
-				"min_gram": 1,
-				"max_gram": 100,
-				"token_chars": [
-					"letter",
-					"digit",
-					"punctuation"
-				]
-			}
-		},
 		"char_filter": {
 			"punctuationgreedy": {
 				"type": "pattern_replace",
@@ -95,6 +84,16 @@
 			"preserving_word_delimiter": {
 				"type": "word_delimiter",
 				"catenate_all": true
+			},
+			"autocomplete_filter": {
+				"type": "edge_ngram",
+				"min_gram": "1",
+				"max_gram": "20",
+				"token_chars": [
+					"letter",
+					"digit",
+					"punctuation"
+				]
 			}
 		}
 	}

@@ -19,6 +19,13 @@
 							"collector.default"
 						]
 					},
+					"alt": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
 					"en": {
 						"type": "text",
 						"index": false,
@@ -90,6 +97,13 @@
 							"collector.default"
 						]
 					},
+					"alt": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
 					"en": {
 						"type": "text",
 						"index": false,
@@ -130,12 +144,6 @@
 					"left": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -157,6 +165,12 @@
 					"default": {
 						"type": "text",
 						"index": false,
+						"fields": {
+							"raw": {
+								"type": "text",
+								"analyzer": "index_raw"
+							}
+						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -256,6 +270,13 @@
 			"street": {
 				"properties": {
 					"default": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"alt": {
 						"type": "text",
 						"index": false,
 						"copy_to": [
