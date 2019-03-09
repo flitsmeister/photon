@@ -55,6 +55,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     private MatchQueryBuilder fuzzyLanguageMatchQueryBuilder;
 
+    private MatchQueryBuilder houseNumberQueryBuilder;
+
     private BoolQueryBuilder m_finalQueryBuilder;
 
     protected ArrayList<FilterFunctionBuilder> m_alFilterFunction4QueryBuilder = new ArrayList<>(1);
@@ -78,6 +80,8 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
             fuzzyLanguageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
                             .analyzer("search_raw").minimumShouldMatch("100%");
 
+            houseNumberQueryBuilder = QueryBuilders.matchQuery("housenumber", query).analyzer("standard").boost(200);
+
             // @formatter:off
             m_query4QueryBuilder = QueryBuilders.boolQuery()
                     .must(QueryBuilders.boolQuery()
@@ -87,7 +91,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                     )
                     .must(QueryBuilders.boolQuery()
                         .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
-                        .should(QueryBuilders.matchQuery("housenumber", query).boost(200).analyzer("standard"))
+                        .should(houseNumberQueryBuilder)
                         .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
                             .must(QueryBuilders.matchQuery("osm_key", "place"))
                             .must(QueryBuilders.matchQuery("osm_value", "house"))
@@ -318,6 +322,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         defaultMatchQueryBuilder.minimumShouldMatch("-1");
         languageMatchQueryBuilder.minimumShouldMatch("-1");
         fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("-1");
+        houseNumberQueryBuilder.boost(1);
 
         if (m_query4QueryBuilder instanceof BoolQueryBuilder)
             ((BoolQueryBuilder) m_query4QueryBuilder).should(QueryBuilders.matchQuery("state.raw", this.query).analyzer("search_raw").boost(0.000001f));
