@@ -108,7 +108,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
         }
 
         // this is former general-score, now inline
-        String strCode = "double score = 1 + doc['importance'].value * 100; score";
+        String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
         ScriptScoreFunctionBuilder functionBuilder4QueryBuilder =
                 ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, new HashMap<String, Object>()));
 
