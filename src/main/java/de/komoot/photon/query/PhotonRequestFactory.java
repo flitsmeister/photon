@@ -20,7 +20,7 @@ public class PhotonRequestFactory {
     private final static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
     protected static HashSet<String> m_hsRequestQueryParams = new HashSet<>(Arrays.asList("lang", "q", "lon", "lat",
-            "limit", "osm_tag", "location_bias_scale", "fuzzy", "lenient"));
+            "limit", "osm_tag", "location_bias_scale", "fuzzy", "lenient", "search_lang"));
 
     public PhotonRequestFactory(Set<String> supportedLanguages) {
         this.languageChecker = new LanguageChecker(supportedLanguages);
@@ -37,6 +37,12 @@ public class PhotonRequestFactory {
         String language = webRequest.queryParams("lang");
         language = language == null ? "en" : language;
         languageChecker.apply(language);
+
+        String search_language = webRequest.queryParams("search_lang");
+        search_language = search_language == null ? language : search_language;
+        languageChecker.apply(search_language);
+
+
         String query = webRequest.queryParams("q");
         if (query == null) throw new BadRequestException(400, "missing search term 'q': /?q=berlin");
         Integer limit;
@@ -72,9 +78,9 @@ public class PhotonRequestFactory {
 
         QueryParamsMap tagFiltersQueryMap = webRequest.queryMap("osm_tag");
         if (!new CheckIfFilteredRequest().execute(tagFiltersQueryMap)) {
-            return (R) new PhotonRequest(query, limit, locationForBias, scale, language, fuzzy, lenient);
+            return (R) new PhotonRequest(query, limit, locationForBias, scale, language, search_language, fuzzy, lenient);
         }
-        FilteredPhotonRequest photonRequest = new FilteredPhotonRequest(query, limit, locationForBias, scale, language, fuzzy, lenient);
+        FilteredPhotonRequest photonRequest = new FilteredPhotonRequest(query, limit, locationForBias, scale, language, search_language, fuzzy, lenient);
         String[] tagFilters = tagFiltersQueryMap.values();
         setUpTagFilters(photonRequest, tagFilters);
 

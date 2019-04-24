@@ -14,7 +14,7 @@ public class SimplePhotonRequestHandler extends AbstractPhotonRequestHandler<Pho
 
     @Override
     public TagFilterQueryBuilder buildQuery(PhotonRequest photonRequest) {
-        TagFilterQueryBuilder queryBuilder = PhotonQueryBuilder.builder(photonRequest.getQuery(), photonRequest.getLanguage()).
+        TagFilterQueryBuilder queryBuilder = PhotonQueryBuilder.builder(photonRequest.getQuery(), photonRequest.getSearchLanguage()).
                 withLocationBias(photonRequest.getLocationForBias(), photonRequest.getScaleForBias());
         if (photonRequest.isFuzzy()) {
             queryBuilder.withFuzzyMatch();
