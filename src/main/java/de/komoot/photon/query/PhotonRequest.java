@@ -12,16 +12,18 @@ public class PhotonRequest implements Serializable {
     private Integer limit;
     private Point locationForBias;
     private String language;
+    private String search_language;
     private final double scale;
     private Boolean fuzzy;
     private Boolean lenient;
 
-    public PhotonRequest(String query, int limit, Point locationForBias, double scale, String language, Boolean fuzzy, Boolean lenient) {
+    public PhotonRequest(String query, int limit, Point locationForBias, double scale, String language, String search_language, Boolean fuzzy, Boolean lenient) {
         this.query = query;
         this.limit = limit;
         this.locationForBias = locationForBias;
         this.scale = scale;
         this.language = language;
+        this.search_language = search_language;
         this.fuzzy = fuzzy;
         this.lenient = lenient;
     }
@@ -44,6 +46,10 @@ public class PhotonRequest implements Serializable {
 
     public String getLanguage() {
         return language;
+    }
+
+    public String getSearchLanguage() {
+        return search_language;
     }
 
     public Boolean isFuzzy() {
