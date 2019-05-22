@@ -50,10 +50,10 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
             for (String key : KEYS_LANG_SPEC) {
                 if (source.containsKey(key)) {
                     String localised = getLocalised(source, key, lang);
-                    String defaultValue = getLocalised(source, key, null);
+                    String refValue = getLocalised(source, key, "ref");
                     properties.put(key, localised);
-                    if (defaultValue != null && (localised == null || !localised.equals(defaultValue)))
-                        properties.put(key + ":default", defaultValue);
+                    if (refValue != null && (localised == null || !localised.equals(refValue)))
+                        properties.put(key + ":ref", refValue);
                 }
             }
 
@@ -82,7 +82,7 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
             return map.get(lang);
         }
 
-        return map.get("ref") != null ? map.get("ref") : map.get("default");
+        return map.get("default");
     }
 
     private JSONObject getPoint(Map<String, Object> source) {
