@@ -28,9 +28,6 @@ public class PhotonRequestHandler {
         int limit = photonRequest.getLimit();
         int extLimit = limit > 1 ? (int) Math.round(photonRequest.getLimit() * 1.5) : 1;
         SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), extLimit);
-        if (results.getHits().getTotalHits() == 0) {
-            results = elasticsearchSearcher.search(queryBuilder.withLenientMatch().buildQuery(), extLimit);
-        }
         List<JSONObject> resultJsonObjects = new ConvertToJson(photonRequest.getLanguage()).convert(results);
         StreetDupesRemover streetDupesRemover = new StreetDupesRemover(photonRequest.getLanguage());
         resultJsonObjects = streetDupesRemover.execute(resultJsonObjects);
