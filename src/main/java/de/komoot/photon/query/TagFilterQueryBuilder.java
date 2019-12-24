@@ -131,6 +131,7 @@ public interface TagFilterQueryBuilder {
      */
     TagFilterQueryBuilder withLenientMatch();
 
+    TagFilterQueryBuilder withFuzzyMatch();
 
     /**
      * turn all collected tags, values, inclusions, exclusions into a {@link QueryBuilder} that can be executed on elastic search
