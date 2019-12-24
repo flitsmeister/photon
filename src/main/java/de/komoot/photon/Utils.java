@@ -97,6 +97,18 @@ public class Utils {
         if (name.get("reg_name") != null)
             fNames.put("reg", name.get("reg_name"));
 
+        if (name.get("short_name") != null)
+            fNames.put("short", name.get("short_name"));
+
+        if (name.get("name:left") != null)
+            fNames.put("left", name.get("name:left"));
+
+        if (name.get("name:right") != null)
+            fNames.put("right", name.get("name:left"));
+
+        if (name.get("ref") != null)
+            fNames.put("ref", name.get("ref"));
+
         write(builder, fNames, "name");
     }
 
@@ -151,6 +163,10 @@ public class Utils {
 
         if (names.get("name") != null) {
             filteredNames.put("default", names.get("name"));
+        }
+
+        if (names.get("alt_name") != null) {
+            filteredNames.put("alt", names.get("alt_name"));
         }
 
         for (String language : languages) {
