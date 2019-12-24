@@ -75,7 +75,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
             languageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.ngrams", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
                     .analyzer("search_ngram").minimumShouldMatch("100%");
 
-            fuzzyLanguageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.AUTO).prefixLength(2)
+            fuzzyLanguageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
                             .analyzer("search_raw").minimumShouldMatch("100%");
 
             // @formatter:off
@@ -329,6 +329,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     public TagFilterQueryBuilder withFuzzyMatch() {
         defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
         languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        fuzzyLanguageMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
         return this;
     }
 
