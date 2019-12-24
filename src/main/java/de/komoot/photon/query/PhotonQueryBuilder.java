@@ -91,18 +91,14 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                         .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
                             .must(QueryBuilders.matchQuery("osm_key", "place"))
                             .must(QueryBuilders.matchQuery("osm_value", "house"))
-                            .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
+                            .mustNot(QueryBuilders.existsQuery("name.default.raw"))
                         ).mustNot(QueryBuilders.boolQuery()
                             .must(QueryBuilders.matchQuery("osm_key", "building"))
                             .must(QueryBuilders.matchQuery("osm_value", "yes"))
-                            .mustNot(QueryBuilders.existsQuery(String.format("name.%s.raw", language)))
+                            .mustNot(QueryBuilders.existsQuery("name.default.raw"))
                         ))
                     )
-                    .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
-                            .analyzer("search_raw").minimumShouldMatch("100%"))
-                    .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
-                            .analyzer("search_raw").minimumShouldMatch("100%"))
-                    .should(QueryBuilders.matchQuery("name.default.raw", query).boost(1)
+                    .should(QueryBuilders.matchQuery("name.default.raw", query).boost(10)
                            .analyzer("search_raw").minimumShouldMatch("100%"));
             // @formatter:on
         }
