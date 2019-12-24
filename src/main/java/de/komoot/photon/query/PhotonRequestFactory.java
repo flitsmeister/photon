@@ -19,7 +19,7 @@ public class PhotonRequestFactory {
     private final BoundingBoxParamConverter bboxParamConverter;
 
     private static final HashSet<String> REQUEST_QUERY_PARAMS = new HashSet<>(Arrays.asList("lang", "q", "lon", "lat",
-            "limit", "osm_tag", "location_bias_scale", "bbox", "debug"));
+            "limit", "osm_tag", "location_bias_scale", "bbox", "debug", "fuzzy", "lenient", "search_lang"));
 
     public PhotonRequestFactory(List<String> supportedLanguages, String defaultLanguage) {
         this.languageResolver = new RequestLanguageResolver(supportedLanguages, defaultLanguage);
@@ -28,12 +28,14 @@ public class PhotonRequestFactory {
 
     public PhotonRequest create(Request webRequest) throws BadRequestException {
 
-
         for (String queryParam : webRequest.queryParams())
             if (!REQUEST_QUERY_PARAMS.contains(queryParam))
                 throw new BadRequestException(400, "unknown query parameter '" + queryParam + "'.  Allowed parameters are: " + REQUEST_QUERY_PARAMS);
 
         String language = languageResolver.resolveRequestedLanguage(webRequest);
+
+        String search_language = webRequest.queryParams("search_lang");
+        search_language = search_language == null ? language : search_language;
 
         String query = webRequest.queryParams("q");
         if (query == null) throw new BadRequestException(400, "missing search term 'q': /?q=berlin");
@@ -57,7 +59,13 @@ public class PhotonRequestFactory {
                 throw new BadRequestException(400, "invalid parameter 'location_bias_scale' must be a number");
             }
 
-        PhotonRequest request = new PhotonRequest(query, limit, bbox, locationForBias, scale, language);
+        String fuzzyStr = webRequest.queryParams("fuzzy");
+        Boolean fuzzy = fuzzyStr != null && fuzzyStr.equals("true");
+
+        String lenientStr = webRequest.queryParams("lenient");
+        Boolean lenient = lenientStr != null && lenientStr.equals("true");
+
+        PhotonRequest request = new PhotonRequest(query, limit, bbox, locationForBias, scale, language, search_language, fuzzy, lenient);
 
         QueryParamsMap tagFiltersQueryMap = webRequest.queryMap("osm_tag");
         if (new CheckIfFilteredRequest().execute(tagFiltersQueryMap)) {

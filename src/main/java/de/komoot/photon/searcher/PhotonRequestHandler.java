@@ -42,8 +42,8 @@ public class PhotonRequestHandler {
     }
 
    public PhotonQueryBuilder buildQuery(PhotonRequest photonRequest) {
-        return PhotonQueryBuilder.
-                builder(photonRequest.getQuery(), photonRequest.getLanguage()).
+        PhotonQueryBuilder queryBuilder = PhotonQueryBuilder.
+                builder(photonRequest.getQuery(), photonRequest.getSearchLanguage()).
                 withTags(photonRequest.tags()).
                 withKeys(photonRequest.keys()).
                 withValues(photonRequest.values()).
@@ -53,5 +53,13 @@ public class PhotonRequestHandler {
                 withTagsNotValues(photonRequest.tagNotValues()).
                 withLocationBias(photonRequest.getLocationForBias(), photonRequest.getScaleForBias()).
                 withBoundingBox(photonRequest.getBbox());
+
+        if (photonRequest.isFuzzy()) {
+             queryBuilder.withFuzzyMatch();
+        }
+        if (photonRequest.isLenient()) {
+            queryBuilder.withLenientMatch();
+        }
+        return queryBuilder;
     }
 }
