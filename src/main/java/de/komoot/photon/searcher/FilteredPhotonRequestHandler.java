@@ -26,8 +26,8 @@ public class FilteredPhotonRequestHandler extends AbstractPhotonRequestHandler<F
         Set<String> excludeValues = photonRequest.notValues();
         Map<String, Set<String>> excludeTagValues = photonRequest.tagNotValues();
 
-        return PhotonQueryBuilder.
-                builder(photonRequest.getQuery(), photonRequest.getLanguage()).
+        TagFilterQueryBuilder queryBuilder = PhotonQueryBuilder.
+                builder(photonRequest.getQuery(), photonRequest.getSearchLanguage()).
                 withTags(includeTags).
                 withKeys(includeKeys).
                 withValues(includeValues).
@@ -37,6 +37,13 @@ public class FilteredPhotonRequestHandler extends AbstractPhotonRequestHandler<F
                 withTagsNotValues(excludeTagValues).
                 withLocationBias(photonRequest.getLocationForBias(), photonRequest.getScaleForBias()).
                 withBoundingBox(photonRequest.getBbox());
+        if (photonRequest.isFuzzy()) {
+            queryBuilder.withFuzzyMatch();
+        }
+        if (photonRequest.isLenient()) {
+            queryBuilder.withLenientMatch();
+        }
+        return queryBuilder;
     }
 
 }

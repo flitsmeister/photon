@@ -20,7 +20,7 @@ public class PhotonRequestFactory {
     private final BoundingBoxParamConverter bboxParamConverter;
 
     protected static HashSet<String> m_hsRequestQueryParams = new HashSet<>(Arrays.asList("lang", "q", "lon", "lat",
-            "limit", "osm_tag", "location_bias_scale", "bbox", "debug"));
+            "limit", "osm_tag", "location_bias_scale", "bbox", "debug", "fuzzy", "lenient", "search_lang"));
     public PhotonRequestFactory(Set<String> supportedLanguages) {
         this.languageChecker = new LanguageChecker(supportedLanguages);
         this.bboxParamConverter = new BoundingBoxParamConverter();
@@ -37,6 +37,11 @@ public class PhotonRequestFactory {
         String language = webRequest.queryParams("lang");
         language = language == null ? "en" : language;
         languageChecker.apply(language);
+
+        String search_language = webRequest.queryParams("search_lang");
+        search_language = search_language == null ? language : search_language;
+        languageChecker.apply(search_language);
+
         String query = webRequest.queryParams("q");
         if (query == null) throw new BadRequestException(400, "missing search term 'q': /?q=berlin");
         Integer limit;
@@ -59,11 +64,17 @@ public class PhotonRequestFactory {
                 throw new BadRequestException(400, "invalid parameter 'location_bias_scale' must be a number");
             }
 
+        String fuzzyStr = webRequest.queryParams("fuzzy");
+        Boolean fuzzy = fuzzyStr != null && fuzzyStr.equals("true");
+
+        String lenientStr = webRequest.queryParams("lenient");
+        Boolean lenient = lenientStr != null && lenientStr.equals("true");
+
         QueryParamsMap tagFiltersQueryMap = webRequest.queryMap("osm_tag");
         if (!new CheckIfFilteredRequest().execute(tagFiltersQueryMap)) {
-            return (R) new PhotonRequest(query, limit, bbox, locationForBias, scale, language);
+            return (R) new PhotonRequest(query, limit, bbox, locationForBias, scale, language, search_language, fuzzy, lenient);
         }
-        FilteredPhotonRequest photonRequest = new FilteredPhotonRequest(query, limit, bbox, locationForBias, scale, language);
+        FilteredPhotonRequest photonRequest = new FilteredPhotonRequest(query, limit, bbox, locationForBias, scale, language, search_language, fuzzy, lenient);
         String[] tagFilters = tagFiltersQueryMap.values();
         setUpTagFilters(photonRequest, tagFilters);
 
