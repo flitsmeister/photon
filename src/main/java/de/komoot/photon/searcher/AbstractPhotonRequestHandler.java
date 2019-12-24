@@ -26,9 +26,6 @@ public abstract class AbstractPhotonRequestHandler<R extends PhotonRequest> impl
         int limit = photonRequest.getLimit();
         int extLimit = limit > 1 ? (int) Math.round(photonRequest.getLimit() * 1.5) : 1;
         SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), extLimit);
-        if (results.getHits().getTotalHits() == 0) {
-            results = elasticsearchSearcher.search(queryBuilder.withLenientMatch().buildQuery(), extLimit);
-        }
         List<JSONObject> resultJsonObjects = new ConvertToJson(photonRequest.getLanguage()).convert(results);
         StreetDupesRemover streetDupesRemover = new StreetDupesRemover(photonRequest.getLanguage());
         resultJsonObjects = streetDupesRemover.execute(resultJsonObjects);
@@ -42,11 +39,11 @@ public abstract class AbstractPhotonRequestHandler<R extends PhotonRequest> impl
     public String dumpQuery(R photonRequest) {
         return buildQuery(photonRequest).buildQuery().toString();
     }
-    
+
     /**
      * Given a {@link PhotonRequest photon request}, build a {@link TagFilterQueryBuilder photon specific query builder} that can be used in the {@link
      * AbstractPhotonRequestHandler#handle handle} method to execute the search.
-     * 
+     *
      * @param photonRequest a PhotonRequest instance holding the parsed query
      * @return an instance of a TagFilterQueryBuilder
      */
