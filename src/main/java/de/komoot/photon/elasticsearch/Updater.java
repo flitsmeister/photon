@@ -33,7 +33,7 @@ public class Updater implements de.komoot.photon.Updater {
     @Override
     public void create(PhotonDoc doc) {
         try {
-            this.bulkRequest.add(this.esClient.prepareIndex(PhotonIndex.NAME, PhotonIndex.TYPE).setSource(Utils.convert(doc, this.languages)).setId(String.valueOf(doc.getPlaceId())));
+            this.bulkRequest.add(this.esClient.prepareIndex(PhotonIndex.NAME, PhotonIndex.TYPE).setSource(Utils.convert(doc, this.languages)).setId(String.valueOf(doc.getUid())));
         } catch (IOException e) {
             log.error(String.format("creation of new doc [%s] failed", doc), e);
         }
