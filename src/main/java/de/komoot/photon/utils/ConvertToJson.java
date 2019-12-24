@@ -48,8 +48,13 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
 
             // language specific properties
             for (String key : KEYS_LANG_SPEC) {
-                if (source.containsKey(key))
-                    properties.put(key, getLocalised(source, key, lang));
+                if (source.containsKey(key)) {
+                    String localised = getLocalised(source, key, lang);
+                    String refValue = getLocalised(source, key, "ref");
+                    properties.put(key, localised);
+                    if (refValue != null && (localised == null || !localised.equals(refValue)))
+                        properties.put(key + ":ref", refValue);
+                }
             }
 
             // add extent of geometry
