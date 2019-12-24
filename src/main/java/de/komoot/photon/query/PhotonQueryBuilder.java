@@ -38,9 +38,11 @@ import static com.google.common.collect.Maps.newHashMap;
 public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     private FunctionScoreQueryBuilder m_finalQueryWithoutTagFilterBuilder;
 
+    private String query;
+
     private Integer limit = 50;
 
-    private BoolQueryBuilder m_queryBuilderForTopLevelFilter;
+    private final String matchAllQuery = "*";
 
     private State state;
 
@@ -52,9 +54,11 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
     private MatchQueryBuilder languageMatchQueryBuilder;
 
-    private GeoBoundingBoxQueryBuilder bboxQueryBuilder;
+    private MatchQueryBuilder fuzzyLanguageMatchQueryBuilder;
 
     private BoolQueryBuilder m_finalQueryBuilder;
+
+    private GeoBoundingBoxQueryBuilder bboxQueryBuilder;
 
     protected ArrayList<FilterFunctionBuilder> m_alFilterFunction4QueryBuilder = new ArrayList<>(1);
 
@@ -62,24 +66,48 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
 
     private PhotonQueryBuilder(String query, String language) {
-        defaultMatchQueryBuilder =
-                QueryBuilders.matchQuery("collector.default", query).fuzziness(Fuzziness.ZERO).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");
+        this.query = query;
 
-        languageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.ngrams", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
-                .analyzer("search_ngram").minimumShouldMatch("100%");
+        if (this.query.equals(matchAllQuery)) {
+            m_query4QueryBuilder = QueryBuilders.matchAllQuery();
+        } else {
 
-        // @formatter:off
-        m_query4QueryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.boolQuery().should(defaultMatchQueryBuilder).should(languageMatchQueryBuilder)
-                        .minimumShouldMatch("1"))
-                .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query).boost(200)
-                        .analyzer("search_raw"))
-                .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).boost(100)
-                        .analyzer("search_raw"));
-        // @formatter:on
+            defaultMatchQueryBuilder =
+                    QueryBuilders.matchQuery("collector.default", query).fuzziness(Fuzziness.ZERO).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");
+
+            languageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.ngrams", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
+                    .analyzer("search_ngram").minimumShouldMatch("100%");
+
+            fuzzyLanguageMatchQueryBuilder = QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query).fuzziness(Fuzziness.ZERO).prefixLength(2)
+                            .analyzer("search_raw").minimumShouldMatch("100%");
+
+            // @formatter:off
+            m_query4QueryBuilder = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.boolQuery()
+                        .should(defaultMatchQueryBuilder)
+                        .should(languageMatchQueryBuilder)
+                        .should(fuzzyLanguageMatchQueryBuilder)
+                    )
+                    .must(QueryBuilders.boolQuery()
+                        .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
+                        .should(QueryBuilders.matchQuery("housenumber", query).boost(200).analyzer("standard"))
+                        .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
+                            .must(QueryBuilders.matchQuery("osm_key", "place"))
+                            .must(QueryBuilders.matchQuery("osm_value", "house"))
+                            .mustNot(QueryBuilders.existsQuery("name.default.raw"))
+                        ).mustNot(QueryBuilders.boolQuery()
+                            .must(QueryBuilders.matchQuery("osm_key", "building"))
+                            .must(QueryBuilders.matchQuery("osm_value", "yes"))
+                            .mustNot(QueryBuilders.existsQuery("name.default.raw"))
+                        ))
+                    )
+                    .should(QueryBuilders.matchQuery("name.default.raw", query).boost(10)
+                           .analyzer("search_raw").minimumShouldMatch("100%"));
+            // @formatter:on
+        }
 
         // this is former general-score, now inline
-        String strCode = "double score = 1 + doc['importance'].value * 100; score";
+        String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
         ScriptScoreFunctionBuilder functionBuilder4QueryBuilder =
                 ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, new HashMap<String, Object>()));
 
@@ -87,13 +115,6 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
 
         m_finalQueryWithoutTagFilterBuilder = new FunctionScoreQueryBuilder(m_query4QueryBuilder, m_alFilterFunction4QueryBuilder.toArray(new FilterFunctionBuilder[0]))
                 .boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MULTIPLY);
-
-        // @formatter:off
-        m_queryBuilderForTopLevelFilter = QueryBuilders.boolQuery()
-                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
-                .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
-                .should(QueryBuilders.existsQuery(String.format("name.%s.raw", language)));
-        // @formatter:on
 
         state = State.PLAIN;
     }
@@ -136,13 +157,13 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                         .boostMode(CombineFunction.MULTIPLY);
         return this;
     }
-    
+
      @Override
     public TagFilterQueryBuilder withBoundingBox(Envelope bbox) {
         if (bbox == null) return this;
         bboxQueryBuilder = new GeoBoundingBoxQueryBuilder("coordinate");
         bboxQueryBuilder.setCorners(bbox.getMaxY(), bbox.getMinX(), bbox.getMinY(), bbox.getMaxX());
-        
+
         return this;
     }
 
@@ -295,14 +316,28 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     public TagFilterQueryBuilder withStrictMatch() {
         defaultMatchQueryBuilder.minimumShouldMatch("100%");
         languageMatchQueryBuilder.minimumShouldMatch("100%");
+        fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("100%");
         return this;
     }
 
 
     @Override
     public TagFilterQueryBuilder withLenientMatch() {
-        defaultMatchQueryBuilder.fuzziness(Fuzziness.ONE).minimumShouldMatch("-1");
-        languageMatchQueryBuilder.fuzziness(Fuzziness.ONE).minimumShouldMatch("-1");
+        defaultMatchQueryBuilder.minimumShouldMatch("-1");
+        languageMatchQueryBuilder.minimumShouldMatch("-1");
+        fuzzyLanguageMatchQueryBuilder.minimumShouldMatch("-1");
+
+        if (m_query4QueryBuilder instanceof BoolQueryBuilder)
+            ((BoolQueryBuilder) m_query4QueryBuilder).should(QueryBuilders.matchQuery("state.raw", this.query).analyzer("search_raw").boost(0.000001f));
+
+        return this;
+    }
+
+    @Override
+    public TagFilterQueryBuilder withFuzzyMatch() {
+        defaultMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        languageMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
+        fuzzyLanguageMatchQueryBuilder.fuzziness(Fuzziness.AUTO);
         return this;
     }
 
@@ -318,7 +353,7 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
     public QueryBuilder buildQuery() {
         if (state.equals(State.FINISHED)) return m_finalQueryBuilder;
 
-        m_finalQueryBuilder = QueryBuilders.boolQuery().must(m_finalQueryWithoutTagFilterBuilder).filter(m_queryBuilderForTopLevelFilter);
+        m_finalQueryBuilder = QueryBuilders.boolQuery().must(m_finalQueryWithoutTagFilterBuilder);
 
         if (state.equals(State.FILTERED)) {
             BoolQueryBuilder tagFilters = QueryBuilders.boolQuery();
@@ -328,9 +363,9 @@ public class PhotonQueryBuilder implements TagFilterQueryBuilder {
                 tagFilters.must(andQueryBuilderForExcludeTagFiltering);
             m_finalQueryBuilder.filter(tagFilters);
         }
-        
-        if (bboxQueryBuilder != null) 
-            m_queryBuilderForTopLevelFilter.filter(bboxQueryBuilder);
+
+        if (bboxQueryBuilder != null)
+            m_finalQueryBuilder.filter(bboxQueryBuilder);
 
         state = State.FINISHED;
 
