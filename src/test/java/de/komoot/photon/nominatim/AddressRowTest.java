@@ -2,6 +2,7 @@ package de.komoot.photon.nominatim;
 
 import org.junit.Test;
 
+import com.neovisionaries.i18n.CountryCode;
 import de.komoot.photon.nominatim.model.AddressRow;
 
 import static org.junit.Assert.assertTrue;
@@ -19,7 +20,7 @@ public class AddressRowTest {
         Map<String, String> name = new HashMap<>();
         name.put("name", "berlin");
         AddressRow row = new AddressRow(198047960L, name, "boundary", "administrative", 0, 4, null, "city", "R", 62422L);
-        assertTrue(row.isCity());
+        assertTrue(row.isCity(CountryCode.DE));
         assertTrue(row.isCuratedCity());
     }
 }
