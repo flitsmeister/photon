@@ -175,17 +175,6 @@
 					"en": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"ngrams": {
-								"type": "text",
-								"analyzer": "index_ngram",
-								"search_analyzer": "search_ngram"
-							},
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.en"
 						]
