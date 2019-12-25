@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 
 public class NominatimUpdater {
-    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(NominatimUpdater.class);
+    protected static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(NominatimUpdater.class);
 
     private static final int CREATE = 1;
     private static final int UPDATE = 2;
@@ -31,14 +31,14 @@ public class NominatimUpdater {
     private static final int MAX_RANK = 30;
 
     private final JdbcTemplate       template;
-    private final NominatimConnector exporter;
+    protected final NominatimConnector exporter;
 
-    private Updater updater;
+    protected Updater updater;
 
     /**
      * when updating lockout other threads
      */
-    private ReentrantLock updateLock = new ReentrantLock();
+    protected ReentrantLock updateLock = new ReentrantLock();
 
     public void setUpdater(Updater updater) {
         this.updater = updater;
@@ -176,7 +176,7 @@ public class NominatimUpdater {
 
     /**
      * Creates a new instance
-     * 
+     *
      * @param host Nominatim database host
      * @param port Nominatim database port
      * @param database Nominatim database name
