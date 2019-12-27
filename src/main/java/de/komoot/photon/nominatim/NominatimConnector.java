@@ -218,7 +218,7 @@ public class NominatimConnector {
     private final String selectColsAddress = "p.place_id, p.osm_type, p.osm_id, p.name, p.class, p.type, p.rank_address, p.admin_level, p.postcode, p.extratags->'place' as place";
     private Importer importer;
 
-    private Map<String, String> getCountryNames(String countrycode) {
+    public Map<String, String> getCountryNames(String countrycode) {
         if (countryNames == null) {
             countryNames = new HashMap<String, Map<String, String>>();
             template.query("SELECT country_code, name FROM country_name;", new RowCallbackHandler() {

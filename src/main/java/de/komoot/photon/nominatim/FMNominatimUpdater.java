@@ -1,6 +1,7 @@
 package de.komoot.photon.nominatim;
 
 import de.komoot.photon.PhotonDoc;
+import de.komoot.photon.OAPhotonDoc;
 import de.komoot.photon.Updater;
 import de.komoot.photon.nominatim.model.UpdateRow;
 import org.apache.commons.dbcp.BasicDataSource;
@@ -10,8 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.json.*;
 
@@ -51,7 +51,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
     private void remove(JSONArray places) {
         for (int i = 0; i < places.length(); i++) {
-            updater.delete(places.getLong(i));
+            updater.delete(String.valueOf(places.getLong(i)));
         }
     }
 
@@ -71,7 +71,38 @@ public class FMNominatimUpdater extends NominatimUpdater {
             if (!create && !wasUseful) {
                 // only true when rank != 30
                 // if no documents for the place id exist this will likely cause moaning
-                updater.delete(placeId);
+                updater.delete(String.valueOf(placeId));
+            }
+        }
+    }
+
+    public void updateOpenAddresses(JSONArray addresses) {
+        if (updateLock.tryLock()) {
+            try {
+                updater.cleanOpenaddresses();
+                updater.finish();
+
+                for (int i = 0; i < addresses.length(); i++) {
+                    String[] location = addresses.getString(i).split(",");
+
+                    PhotonDoc doc = new OAPhotonDoc(
+                        i,
+                        Double.parseDouble(location[0]),
+                        Double.parseDouble(location[1]),
+                        location[2],
+                        location[3],
+                        location[4],
+                        location[5],
+                        location[6]
+                    );
+
+                    doc.setCountry(exporter.getCountryNames(doc.getCountryCode().getAlpha2().toLowerCase()));
+
+                    updater.updateOrCreate(doc);
+                }
+                updater.finish();
+            } finally {
+                updateLock.unlock();
             }
         }
     }
