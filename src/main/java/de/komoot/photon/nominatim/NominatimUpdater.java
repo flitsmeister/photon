@@ -58,7 +58,7 @@ public class NominatimUpdater {
 
                             Integer indexedStatus = place.getIndexdStatus();
                             if (indexedStatus == DELETE || (indexedStatus == UPDATE && rank == MAX_RANK)) {
-                                updater.delete(placeId);
+                                updater.delete(String.valueOf(placeId));
                                 if (indexedStatus == DELETE) {
                                     deletedPlaces++;
                                     continue;
@@ -90,7 +90,7 @@ public class NominatimUpdater {
                             if (indexedStatus == UPDATE && !wasUseful) {
                                 // only true when rank != 30
                                 // if no documents for the place id exist this will likely cause moaning
-                                updater.delete(placeId);
+                                updater.delete(String.valueOf(placeId));
                                 updatedPlaces--;
                             }
                         }
@@ -114,7 +114,7 @@ public class NominatimUpdater {
 
                         Integer indexedStatus = place.getIndexdStatus();
                         if (indexedStatus != CREATE) {
-                            updater.delete(placeId);
+                            updater.delete(String.valueOf(placeId));
                             if (indexedStatus == DELETE) {
                                 deletedInterpolations++;
                                 continue;
