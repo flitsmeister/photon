@@ -27,6 +27,18 @@
 					"asciifolding"
 				]
 			},
+			"search_ngram_concatenated": {
+				"char_filter": [
+					"punctuationgreedy"
+				],
+				"tokenizer": "keyword",
+				"filter": [
+					"preserving_word_delimiter_for_search",
+					"lowercase",
+					"german_normalization",
+					"asciifolding"
+				]
+			},
 			"index_raw": {
 				"char_filter": [
 					"punctuationgreedy"
@@ -84,6 +96,11 @@
 			"preserving_word_delimiter": {
 				"type": "word_delimiter",
 				"catenate_all": true
+			},
+			"preserving_word_delimiter_for_search": {
+				"type": "word_delimiter",
+				"catenate_all": true,
+				"generate_word_parts": false
 			},
 			"autocomplete_filter": {
 				"type": "edge_ngram",
