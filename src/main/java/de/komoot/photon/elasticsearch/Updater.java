@@ -39,8 +39,8 @@ public class Updater implements de.komoot.photon.Updater {
         }
     }
 
-    public void delete(Long id) {
-        this.bulkRequest.add(this.esClient.prepareDelete(PhotonIndex.NAME, PhotonIndex.TYPE, String.valueOf(id)));
+    public void delete(String id) {
+        this.bulkRequest.add(this.esClient.prepareDelete(PhotonIndex.NAME, PhotonIndex.TYPE, id));
     }
 
     private void updateDocuments() {
