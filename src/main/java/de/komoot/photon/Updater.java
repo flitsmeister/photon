@@ -13,4 +13,6 @@ public interface Updater {
     public void finish();
 
     public void updateOrCreate(PhotonDoc updatedDoc);
+
+    public void cleanOpenaddresses();
 }
