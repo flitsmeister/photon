@@ -8,9 +8,11 @@ public interface Updater {
 
     public void update(PhotonDoc doc);
 
-    public void delete(Long id);
+    public void delete(String id);
 
     public void finish();
 
     public void updateOrCreate(PhotonDoc updatedDoc);
+
+    public void cleanOpenaddresses();
 }
