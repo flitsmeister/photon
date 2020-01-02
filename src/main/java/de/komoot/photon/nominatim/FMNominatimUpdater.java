@@ -76,17 +76,25 @@ public class FMNominatimUpdater extends NominatimUpdater {
         }
     }
 
-    public void updateOpenAddresses(JSONArray addresses) {
+    public void updateOpenAddresses(JSONArray addresses, int startIndex, Boolean clean) {
         if (updateLock.tryLock()) {
             try {
-                updater.cleanOpenaddresses();
-                updater.finish();
+                if (clean) {
+                    System.out.println("Cleaning old openaddress");
+                    updater.cleanOpenaddresses();
+                    updater.finish();
+                    System.out.println("Cleaning finished");
+                }
 
+                System.out.println("Now importing " + addresses.length() + " addresses");
                 for (int i = 0; i < addresses.length(); i++) {
+                    if (i % 10000 == 0)
+                        System.out.println(i);
+
                     String[] location = addresses.getString(i).split(",");
 
                     PhotonDoc doc = new OAPhotonDoc(
-                        i,
+                        i + startIndex,
                         Double.parseDouble(location[0]),
                         Double.parseDouble(location[1]),
                         location[2],
@@ -101,6 +109,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
                     updater.updateOrCreate(doc);
                 }
                 updater.finish();
+                System.out.println("Finished importing");
             } finally {
                 updateLock.unlock();
             }
