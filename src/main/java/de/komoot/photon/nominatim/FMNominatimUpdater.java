@@ -88,7 +88,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
                 System.out.println("Now importing " + addresses.length() + " addresses");
                 for (int i = 0; i < addresses.length(); i++) {
-                    if (i % 10000 == 0) {
+                    if (i % 10000 == 0 && i > 0) {
                         System.out.println(i);
                         updater.finish();
                     }
