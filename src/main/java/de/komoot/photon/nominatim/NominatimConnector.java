@@ -147,7 +147,7 @@ public class NominatimConnector {
                     (Envelope) null,
                     rs.getLong("parent_place_id"),
                     0d, // importance
-                    CountryCode.getByCode(rs.getString("country_code")),
+                    CountryCode.getByCodeIgnoreCase(rs.getString("country_code")),
                     (Point) null, // centroid
                     0,
                     30
@@ -190,7 +190,7 @@ public class NominatimConnector {
                     envelope,
                     rs.getLong("parent_place_id"),
                     importance,
-                    CountryCode.getByCode(rs.getString("country_code")),
+                    CountryCode.getByCodeIgnoreCase(rs.getString("country_code")),
                     (Point) DBUtils.extractGeometry(rs, "centroid"),
                     rs.getLong("linked_place_id"),
                     rs.getInt("rank_search")
