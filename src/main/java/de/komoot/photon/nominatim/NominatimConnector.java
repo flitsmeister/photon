@@ -510,6 +510,11 @@ public class NominatimConnector {
                 continue;
             }
 
+            if (doc.getCountryCode() == CountryCode.BE && address.isDistrict() && doc.getDistrict() == null) {
+                doc.setDistrict(address.getName());
+                continue;
+            }
+
             // no specifically handled item, check if useful for context
             if (address.isUsefulForContext(doc.getCountryCode())) {
                 doc.getContext().add(address.getName());

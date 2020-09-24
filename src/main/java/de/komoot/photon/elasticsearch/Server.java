@@ -232,6 +232,7 @@ public class Server {
                 propertiesObject = addToCollector("context", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("country", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("street", propertiesObject, copyToCollectorObject, lang);
+                propertiesObject = addToCollector("district", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("name", propertiesObject, nameToCollectorObject, lang);
 
                 JSONObject copyToStateObject = new JSONObject("{\"type\":\"text\",\"index\":false,\"copy_to\":[\"state.raw\"]}");

@@ -153,6 +153,14 @@ public class AddressRow {
         return false;
     }
 
+    public boolean isDistrict() {
+        if (adminLevel != null && adminLevel == 9 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
