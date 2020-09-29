@@ -31,11 +31,12 @@ public class OAPhotonDoc extends PhotonDoc  {
             "house_number",
             Collections.<String, String>emptyMap(), // no name
             houseNumber,
+            Collections.<String, String>emptyMap(), // no address
             Collections.<String, String>emptyMap(), // no extratags
             (Envelope) null,
             0,
             0d, // importance
-            CountryCode.getByCode(countryCode),
+            countryCode,
             geometryFactory.createPoint(new Coordinate(longitude, latitude)),
             0,
             30
