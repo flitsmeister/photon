@@ -11,7 +11,7 @@ import de.komoot.photon.Importer;
 import de.komoot.photon.PhotonDoc;
 import de.komoot.photon.nominatim.model.AddressRow;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -147,7 +147,7 @@ public class NominatimConnector {
                     (Envelope) null,
                     rs.getLong("parent_place_id"),
                     0d, // importance
-                    CountryCode.getByCode(rs.getString("country_code")),
+                    CountryCode.getByCodeIgnoreCase(rs.getString("country_code")),
                     (Point) null, // centroid
                     0,
                     30
@@ -190,7 +190,7 @@ public class NominatimConnector {
                     envelope,
                     rs.getLong("parent_place_id"),
                     importance,
-                    CountryCode.getByCode(rs.getString("country_code")),
+                    CountryCode.getByCodeIgnoreCase(rs.getString("country_code")),
                     (Point) DBUtils.extractGeometry(rs, "centroid"),
                     rs.getLong("linked_place_id"),
                     rs.getInt("rank_search")
@@ -507,6 +507,11 @@ public class NominatimConnector {
 
             if (address.isState() && doc.getState() == null) {
                 doc.setState(address.getName());
+                continue;
+            }
+
+            if (doc.getCountryCode() == CountryCode.BE && address.isDistrict() && doc.getDistrict() == null) {
+                doc.setDistrict(address.getName());
                 continue;
             }
 

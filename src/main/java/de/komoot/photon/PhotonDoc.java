@@ -38,6 +38,7 @@ public class PhotonDoc {
     private Set<Map<String, String>> context = new HashSet<Map<String, String>>();
     private Map<String, String> country;
     private Map<String, String> state;
+    private Map<String, String> district;
     private String houseNumber;
     private Point centroid;
 
@@ -85,6 +86,7 @@ public class PhotonDoc {
         this.rankSearch = other.rankSearch;
         this.street = other.street;
         this.city = other.city;
+        this.district = other.district;
         this.context = other.context;
         this.country = other.country;
         this.state = other.state;

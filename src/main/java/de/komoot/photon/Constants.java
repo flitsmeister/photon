@@ -14,6 +14,7 @@ public class Constants {
     public static final String CITY = "city";
     public static final String STREET = "street";
     public static final String STATE = "state";
+    public static final String DISTRICT = "district";
     public static final String TYPE = "type";
     public static final String GEOMETRY = "geometry";
     public static final String PROPERTIES = "properties";

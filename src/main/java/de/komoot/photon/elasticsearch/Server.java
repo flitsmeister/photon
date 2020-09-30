@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
@@ -184,14 +185,15 @@ public class Server {
                 .getResourceAsStream("mappings.json");
         final InputStream index_settings = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("index_settings.json");
+        final Charset utf8_charset = Charset.forName("utf-8");
 
-        String mappingsString = IOUtils.toString(mappings);
+        String mappingsString = IOUtils.toString(mappings, utf8_charset);
         JSONObject mappingsJSON = new JSONObject(mappingsString);
 
         // add all langs to the mapping
         mappingsJSON = addLangsToMapping(mappingsJSON);
 
-        JSONObject settings = new JSONObject(IOUtils.toString(index_settings));
+        JSONObject settings = new JSONObject(IOUtils.toString(index_settings, utf8_charset));
         if (shards != null) {
             settings.put("index", new JSONObject("{ \"number_of_shards\":" + shards + " }"));
         }
@@ -230,6 +232,7 @@ public class Server {
                 propertiesObject = addToCollector("context", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("country", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("street", propertiesObject, copyToCollectorObject, lang);
+                propertiesObject = addToCollector("district", propertiesObject, copyToCollectorObject, lang);
                 propertiesObject = addToCollector("name", propertiesObject, nameToCollectorObject, lang);
 
                 JSONObject copyToStateObject = new JSONObject("{\"type\":\"text\",\"index\":false,\"copy_to\":[\"state.raw\"]}");

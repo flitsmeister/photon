@@ -1,7 +1,7 @@
 package de.komoot.photon.nominatim.model;
 
 import com.neovisionaries.i18n.CountryCode;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -153,9 +153,17 @@ public class AddressRow {
         return false;
     }
 
+    public boolean isDistrict() {
+        if (adminLevel != null && adminLevel == 9 && "boundary".equals(osmKey) && "administrative".equals(osmValue)) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("placeId", placeId)
                 .add("name", name)
                 .add("osmKey", osmKey)

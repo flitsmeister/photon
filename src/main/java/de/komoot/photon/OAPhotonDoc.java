@@ -35,7 +35,7 @@ public class OAPhotonDoc extends PhotonDoc  {
             (Envelope) null,
             0,
             0d, // importance
-            CountryCode.getByCode(countryCode),
+            CountryCode.getByCodeIgnoreCase(countryCode),
             geometryFactory.createPoint(new Coordinate(longitude, latitude)),
             0,
             30

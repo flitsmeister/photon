@@ -271,6 +271,31 @@
 						]
 					}
 				}
+			},
+			"district": {
+				"properties": {
+					"default": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"alt": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"en": {
+						"type": "text",
+						"index": false,
+						"copy_to": [
+							"collector.en"
+						]
+					}
+				}
 			}
 		}
 	}
