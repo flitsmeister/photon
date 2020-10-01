@@ -188,7 +188,7 @@ public class PhotonDoc {
         String existingName = map.get("name");
         if (!field.equals(existingName)) {
             for (String key : map.keySet()) {
-                if (existingName.equals(map.get(key))) {
+                if (map.get(key).equals(existingName)) {
                     if (log.isDebugEnabled()) {
                         log.debug("Replacing " + addressFieldName + " name '" + existingName + "' with '" + field + "' for osmId #" + osmId);
                     }
