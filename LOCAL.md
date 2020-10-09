@@ -23,5 +23,5 @@ This created a `photon_data` directory at the current location. To have a clean 
 
 ## View created index
 - Too really persist data for this viewer (Because of a transaction log) you should shutdown, startup and shutdown again of Photon
-- By using Luke: `https://github.com/DmitryKey/luke/releases/download/luke-7.4.0/luke-javafx-7.4.0-luke-release.zip`
-- Unzip and run: `java -jar luke-7.4.0/target/luke-javafx-with-deps.jar `
+- By using Luke: `https://github.com/DmitryKey/luke/releases/download/luke-swing-7.7.0/luke-swing-7.7.0-luke-release.zip`
+- Unzip and run: `./luke.sh and choose elasticsearch directory`
