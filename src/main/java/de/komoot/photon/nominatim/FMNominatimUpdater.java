@@ -1,13 +1,14 @@
 package de.komoot.photon.nominatim;
 
 import de.komoot.photon.PhotonDoc;
-import de.komoot.photon.OAPhotonDoc;
+import de.komoot.photon.ManualPhotonDoc;
 import de.komoot.photon.Updater;
 import de.komoot.photon.nominatim.model.UpdateRow;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import com.google.common.collect.ImmutableMap;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -76,12 +77,12 @@ public class FMNominatimUpdater extends NominatimUpdater {
         }
     }
 
-    public void updateOpenAddresses(JSONArray addresses, int startIndex, Boolean clean) {
+    public void updateManualRecords(String prefix, JSONArray addresses, int startIndex, Boolean clean) {
         if (updateLock.tryLock()) {
             try {
                 if (clean) {
-                    System.out.println("Cleaning old openaddress");
-                    updater.cleanOpenaddresses();
+                    System.out.println("Cleaning old " + prefix + " records");
+                    updater.cleanManualRecords(prefix);
                     updater.finish();
                     System.out.println("Cleaning finished");
                 }
@@ -95,7 +96,13 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
                     String[] location = addresses.getString(i).split(",");
 
-                    PhotonDoc doc = new OAPhotonDoc(
+                    Map<String, String> name = Collections.<String, String>emptyMap();
+                    if (location.length == 8) {
+                        name = ImmutableMap.of("name", location[7]);
+                    }
+
+                    PhotonDoc doc = new ManualPhotonDoc(
+                        prefix,
                         i + startIndex,
                         Double.parseDouble(location[0]),
                         Double.parseDouble(location[1]),
@@ -103,7 +110,8 @@ public class FMNominatimUpdater extends NominatimUpdater {
                         location[3],
                         location[4],
                         location[5],
-                        location[6]
+                        location[6],
+                        name
                     );
 
                     doc.setCountry(exporter.getCountryNames(doc.getCountryCode().getAlpha2().toLowerCase()));

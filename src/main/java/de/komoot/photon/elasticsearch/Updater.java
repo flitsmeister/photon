@@ -60,10 +60,10 @@ public class Updater implements de.komoot.photon.Updater {
         this.bulkRequest.add(this.esClient.prepareDelete("photon", "place", id));
     }
 
-    public void cleanOpenaddresses() {
+    public void cleanManualRecords(String prefix) {
         int i = 0;
         while (true) {
-            String id = "O:" + String.valueOf(i++);
+            String id = prefix + ":" + String.valueOf(i++);
             final boolean exists = this.esClient.get(this.esClient.prepareGet("photon", "place", id).request()).actionGet().isExists();
             if (exists)
                 this.delete(id);
