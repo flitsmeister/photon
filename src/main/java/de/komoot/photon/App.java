@@ -175,10 +175,11 @@ public class App {
             return nominatimUpdater.isUpdating() ? "updating" : "";
         });
 
-        post("/open-addresses-io", (Request request, Response response) -> {
+        post("/upload-manual-records", (Request request, Response response) -> {
             JSONArray addresses = new JSONArray(request.body());
             int index = Integer.parseInt(request.queryParamOrDefault("index", "0"));
-            new Thread(() -> nominatimUpdater.updateOpenAddresses(addresses, index, index == 0)).start();
+            String prefix = request.queryParams("prefix");
+            new Thread(() -> nominatimUpdater.updateManualRecords(prefix, addresses, index, index == 0)).start();
             return "nominatim update started (more information in console output) ...";
         });
     }

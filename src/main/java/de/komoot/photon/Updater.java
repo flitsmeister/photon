@@ -14,5 +14,5 @@ public interface Updater {
 
     public void updateOrCreate(PhotonDoc updatedDoc);
 
-    public void cleanOpenaddresses();
+    public void cleanManualRecords(String prefix);
 }
