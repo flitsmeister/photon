@@ -8,6 +8,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import com.google.common.collect.ImmutableMap;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -95,9 +96,9 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
                     JSONObject address = addresses.getJSONObject(i);
 
-                    Map<String, String> name = Map.of();
+                    Map<String, String> name = Collections.<String, String>emptyMap();
                     if (address.has("name")) {
-                        name = Map.of("name", address.getString("name"));
+                        name = ImmutableMap.of("name", address.getString("name"));
                     }
 
                     Map<String, String> extraValues = null;
