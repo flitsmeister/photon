@@ -21,7 +21,7 @@ public class ManualPhotonDoc extends PhotonDoc  {
     public ManualPhotonDoc(String prefix, long index, Double latitude, Double longitude, String street, String houseNumber, String city, String postcode, String countryCode, Map<String, String> name, Map<String, String> extraValues) {
         super(
             index,
-            "O",
+            prefix,
             index,
             "place",
             "house_number",
