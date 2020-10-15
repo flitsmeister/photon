@@ -102,7 +102,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
                     Map<String, String> extraValues = null;
                     if (address.has("context")) {
-                        extraValues = Map.of();
+                        extraValues = new HashMap<String, String>();
                         JSONArray context = address.getJSONArray("context");
                         for (int j = 0; j < context.length(); j++) {
                             extraValues.put("name", context.getString(j));
