@@ -18,7 +18,7 @@ public class ManualPhotonDoc extends PhotonDoc  {
     final private long index;
     final private String prefix;
 
-    public ManualPhotonDoc(String prefix, long index, Double latitude, Double longitude, String street, String houseNumber, String city, String postcode, String countryCode, Map<String, String> name) {
+    public ManualPhotonDoc(String prefix, long index, Double latitude, Double longitude, String street, String houseNumber, String city, String postcode, String countryCode, Map<String, String> name, Map<String, String> extraValues) {
         super(
             index,
             "O",
@@ -48,6 +48,10 @@ public class ManualPhotonDoc extends PhotonDoc  {
         });
 
         this.setPostcode(postcode);
+
+        if (extraValues != null) {
+            this.getContext().add(extraValues);
+        }
     }
 
     public String getUid() {
