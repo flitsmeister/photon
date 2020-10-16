@@ -94,24 +94,34 @@ public class FMNominatimUpdater extends NominatimUpdater {
                         updater.finish();
                     }
 
-                    String[] location = addresses.getString(i).split(",");
+                    JSONObject address = addresses.getJSONObject(i);
 
                     Map<String, String> name = Collections.<String, String>emptyMap();
-                    if (location.length == 8) {
-                        name = ImmutableMap.of("name", location[7]);
+                    if (address.has("name")) {
+                        name = ImmutableMap.of("name", address.getString("name"));
+                    }
+
+                    Map<String, String> extraValues = null;
+                    if (address.has("context")) {
+                        extraValues = new HashMap<String, String>();
+                        JSONArray context = address.getJSONArray("context");
+                        for (int j = 0; j < context.length(); j++) {
+                            extraValues.put("name", context.getString(j));
+                        }
                     }
 
                     PhotonDoc doc = new ManualPhotonDoc(
                         prefix,
                         i + startIndex,
-                        Double.parseDouble(location[0]),
-                        Double.parseDouble(location[1]),
-                        location[2],
-                        location[3],
-                        location[4],
-                        location[5],
-                        location[6],
-                        name
+                        address.getDouble("latitude"),
+                        address.getDouble("longitude"),
+                        address.getString("street"),
+                        address.getString("housenumber"),
+                        address.getString("location"),
+                        address.getString("zipcode"),
+                        address.getString("country_code"),
+                        name,
+                        extraValues
                     );
 
                     doc.setCountry(exporter.getCountryNames(doc.getCountryCode().getAlpha2().toLowerCase()));
