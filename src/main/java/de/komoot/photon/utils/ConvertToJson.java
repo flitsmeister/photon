@@ -42,7 +42,7 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
 
             if (debug) {
                 properties.put("score", hit.getScore());
-                properties.put("score-explanation", hit.getExplanation());
+                properties.put("score_explanation", hit.getExplanation());
             }
 
             // language unspecific properties
