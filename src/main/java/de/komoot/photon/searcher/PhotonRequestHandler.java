@@ -14,15 +14,15 @@ import java.util.List;
 public interface PhotonRequestHandler<R extends PhotonRequest> {
     /**
      * Use the request to query ES
-     * 
+     *
      * @param photonRequest the request
      * @return a List of returned results
      */
-    List<JSONObject> handle(R photonRequest);
-    
+    List<JSONObject> handle(R photonRequest, Boolean debug);
+
     /**
      * Get a JSON representation of the query that would be built from the request
-     * 
+     *
      * @param photonRequest the request
      * @return a String containing JSON
      */

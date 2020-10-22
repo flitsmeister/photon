@@ -15,7 +15,7 @@ import java.io.IOException;
 public class QueryToJson implements OneWayConverter<QueryBuilder, String> {
 
     @Override
-    public String convert(QueryBuilder anItem) {
+    public String convert(QueryBuilder anItem, Boolean debug) {
         try {
             BytesReference bytes = anItem.toXContent(JsonXContent.contentBuilder(), new ToXContent.MapParams(null))
                     .bytes();

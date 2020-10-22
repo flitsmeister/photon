@@ -9,5 +9,5 @@ import java.util.List;
  * @author svantulden
  */
 public interface ReverseRequestHandler<R extends ReverseRequest> {
-    List<JSONObject> handle(R reverseRequest);
+    List<JSONObject> handle(R reverseRequest, Boolean debug);
 }

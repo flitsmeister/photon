@@ -27,7 +27,7 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
     }
 
     @Override
-    public List<JSONObject> convert(SearchResponse searchResponse) {
+    public List<JSONObject> convert(SearchResponse searchResponse, Boolean debug) {
         SearchHit[] hits = searchResponse.getHits().hits();
         final List<JSONObject> list = Lists.newArrayListWithExpectedSize(hits.length);
         for (SearchHit hit : hits) {
@@ -39,6 +39,11 @@ public class ConvertToJson implements OneWayConverter<SearchResponse, List<JSONO
 
             // populate properties
             final JSONObject properties = new JSONObject();
+
+            if (debug) {
+                properties.put("score", hit.getScore());
+                properties.put("score-explanation", hit.getExplanation());
+            }
 
             // language unspecific properties
             for (String key : KEYS_LANG_UNSPEC) {
