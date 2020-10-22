@@ -14,7 +14,7 @@ import java.io.IOException;
 @Slf4j
 public class QueryToJson {
 
-    public String convert(QueryBuilder anItem) {
+    public String convert(QueryBuilder anItem Boolean debug) {
         try {
             BytesReference bytes = anItem.toXContent(JsonXContent.contentBuilder(), new ToXContent.MapParams(null))
                     .bytes();

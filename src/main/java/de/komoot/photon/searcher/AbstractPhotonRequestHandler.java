@@ -20,13 +20,13 @@ public abstract class AbstractPhotonRequestHandler<R extends PhotonRequest> impl
     }
 
     @Override
-    public List<JSONObject> handle(R photonRequest) {
+    public List<JSONObject> handle(R photonRequest, Boolean debug) {
         TagFilterQueryBuilder queryBuilder = buildQuery(photonRequest);
         // for the case of deduplication we need a bit more results, #300
         int limit = photonRequest.getLimit();
         int extLimit = limit > 1 ? (int) Math.round(photonRequest.getLimit() * 1.5) : 1;
-        SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), extLimit);
-        List<JSONObject> resultJsonObjects = new ConvertToJson(photonRequest.getLanguage()).convert(results);
+        SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), extLimit, debug);
+        List<JSONObject> resultJsonObjects = new ConvertToJson(photonRequest.getLanguage()).convert(results, debug);
         StreetDupesRemover streetDupesRemover = new StreetDupesRemover(photonRequest.getLanguage());
         resultJsonObjects = streetDupesRemover.execute(resultJsonObjects);
         if (resultJsonObjects.size() > limit) {

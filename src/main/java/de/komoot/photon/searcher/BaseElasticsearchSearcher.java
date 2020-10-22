@@ -1,5 +1,6 @@
 package de.komoot.photon.searcher;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -18,16 +19,17 @@ public class BaseElasticsearchSearcher implements ElasticsearchSearcher {
     }
 
     @Override
-    public SearchResponse search(QueryBuilder queryBuilder, Integer limit) {
+    public SearchResponse search(QueryBuilder queryBuilder, Integer limit, Boolean debug) {
         TimeValue timeout = TimeValue.timeValueSeconds(7);
-        return client.prepareSearch("photon").
-                setSearchType(SearchType.QUERY_AND_FETCH).
-                setQuery(queryBuilder).
-                setSize(limit).
-                setTimeout(timeout).
-                execute().
-                actionGet();
-
+        SearchRequestBuilder builder = client.prepareSearch("photon").
+            setSearchType(SearchType.QUERY_AND_FETCH).
+            setQuery(queryBuilder).
+            setSize(limit).
+            setTimeout(timeout);
+        if (debug) {
+            builder.setExplain(true);
+        }
+        return builder.execute().actionGet();
     }
 
 }
