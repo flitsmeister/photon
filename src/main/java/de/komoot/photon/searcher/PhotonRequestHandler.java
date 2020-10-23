@@ -20,6 +20,8 @@ public interface PhotonRequestHandler<R extends PhotonRequest> {
      */
     List<JSONObject> handle(R photonRequest, Boolean debug);
 
+    long total(R photonRequest);
+
     /**
      * Get a JSON representation of the query that would be built from the request
      *

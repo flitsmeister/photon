@@ -54,6 +54,9 @@ public class SearchRequestHandler<R extends PhotonRequest> extends RouteImpl {
             JSONObject jsonDebug = new JSONObject();
             jsonDebug.put("query", new JSONObject(handler.dumpQuery(photonRequest)));
             geoJsonResults.put(DEBUG_PARAMETER, jsonDebug);
+
+            jsonDebug.put("total", handler.total(photonRequest));
+
             return geoJsonResults.toString(4);
         }
 
