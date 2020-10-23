@@ -10,5 +10,5 @@ public interface OneWayConverter<A, B> {
      * @param anItem an instance of type {@link A}
      * @return an instance of type {@link B{}
      */
-    B convert(A anItem);
+    B convert(A anItem, Boolean debug);
 }
