@@ -36,6 +36,13 @@ public abstract class AbstractPhotonRequestHandler<R extends PhotonRequest> impl
     }
 
     @Override
+    public long total(R photonRequest) {
+        TagFilterQueryBuilder queryBuilder = buildQuery(photonRequest);
+        SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), 0, false);
+        return results.getHits().getTotalHits();
+    }
+
+    @Override
     public String dumpQuery(R photonRequest) {
         return buildQuery(photonRequest).buildQuery().toString();
     }
