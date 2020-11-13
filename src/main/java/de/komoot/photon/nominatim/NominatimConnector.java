@@ -458,7 +458,7 @@ public class NominatimConnector {
     private void completePlace(PhotonDoc doc) {
         final List<AddressRow> addresses = getAddresses(doc);
         for (AddressRow address : addresses) {
-            if (address.isCity()) {
+            if (address.isCity(doc.getCountryCode())) {
                 if (doc.getCity() == null) {
                     doc.setCity(address.getName());
                 } else {

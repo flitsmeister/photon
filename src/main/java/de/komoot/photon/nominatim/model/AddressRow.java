@@ -1,6 +1,7 @@
 package de.komoot.photon.nominatim.model;
 
 import com.google.common.base.MoreObjects;
+import com.neovisionaries.i18n.CountryCode;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -45,7 +46,10 @@ public class AddressRow {
     /**
      * @return whether nominatim thinks this place is a town or city
      */
-    public boolean isCity() {
+    public boolean isCity(CountryCode countryCode) {
+        if (countryCode == CountryCode.NL) {
+            return "boundary".equals(osmKey) && "administrative".equals(osmValue) && 13 <= rankAddress && rankAddress < 21;
+        }
         return 13 <= rankAddress && rankAddress < 17;
     }
 
