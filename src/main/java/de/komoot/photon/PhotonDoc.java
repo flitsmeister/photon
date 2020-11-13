@@ -146,7 +146,7 @@ public class PhotonDoc {
 
         return true;
     }
-
+    
     /**
      * Complete doc from nominatim address information.
      */
@@ -185,21 +185,19 @@ public class PhotonDoc {
         if (field == null) return existingField;
 
         Map<String, String> map = (existingField == null) ? new HashMap<>() : existingField;
+
         String existingName = map.get("name");
         if (!field.equals(existingName)) {
-            for (String key : map.keySet()) {
-                if (existingName.equals(map.get(key))) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Replacing " + addressFieldName + " name '" + existingName + "' with '" + field + "' for osmId #" + osmId);
-                    }
-                    // we keep the former name in the context as it might be helpful when looking up typos
-                    if(!Objects.isNull(existingName)) {
-                        context.add(ImmutableMap.of("formerName", existingName));
-                    }
-                    map.put(key, field);
-                }
+            if (log.isDebugEnabled()) {
+                log.debug("Replacing " + addressFieldName + " name '" + existingName + "' with '" + field + "' for osmId #" + osmId);
             }
+            // we keep the former name in the context as it might be helpful when looking up typos
+            if(!Objects.isNull(existingName)) {
+                context.add(ImmutableMap.of("formerName", existingName));
+            }
+            map.put("name", field);
         }
+
         return map;
     }
 }
