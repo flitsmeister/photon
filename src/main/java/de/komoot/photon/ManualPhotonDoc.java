@@ -27,15 +27,17 @@ public class ManualPhotonDoc extends PhotonDoc  {
             "house_number",
             name,
             houseNumber,
+            Collections.<String, String>emptyMap(), // no address
             Collections.<String, String>emptyMap(), // no extratags
             (Envelope) null,
             0,
             0d, // importance
-            CountryCode.getByCodeIgnoreCase(countryCode),
+            countryCode,
             geometryFactory.createPoint(new Coordinate(longitude, latitude)),
             0,
             30
         );
+
         this.prefix = prefix;
         this.index = index;
 
