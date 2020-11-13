@@ -10,7 +10,6 @@
 				"filter": [
 					"preserving_word_delimiter",
 					"lowercase",
-					"german_normalization",
 					"asciifolding",
 					"unique",
 					"autocomplete_filter"
@@ -23,7 +22,6 @@
 				"tokenizer": "standard",
 				"filter": [
 					"lowercase",
-					"german_normalization",
 					"asciifolding"
 				]
 			},
@@ -35,7 +33,6 @@
 				"filter": [
 					"preserving_word_delimiter_for_search",
 					"lowercase",
-					"german_normalization",
 					"asciifolding"
 				]
 			},
@@ -46,7 +43,6 @@
 				"filter": [
 					"word_delimiter",
 					"lowercase",
-					"german_normalization",
 					"asciifolding",
 					"unique"
 				],
@@ -59,7 +55,6 @@
 				"filter": [
 					"word_delimiter",
 					"lowercase",
-					"german_normalization",
 					"asciifolding",
 					"unique"
 				],
