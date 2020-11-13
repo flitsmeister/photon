@@ -307,24 +307,6 @@
 					}
 				}
 			},
-	  		"locality": {
-				"properties": {
-					"default": {
-						"type": "text",
-						"index": false,
-						"copy_to": [
-							"collector.default"
-						]
-					},
-					"en": {
-						"type": "text",
-						"index": false,
-						"copy_to": [
-							"collector.en"
-						]
-					}
-				}
-			},
 			"county": {
 				"properties": {
 					"default": {
