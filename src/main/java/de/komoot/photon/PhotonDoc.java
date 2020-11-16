@@ -184,7 +184,7 @@ public class PhotonDoc {
 
         return true;
     }
-    
+
     /**
      * Extract an address field from an address tag and replace the appropriate address field in the document.
      *
@@ -210,6 +210,11 @@ public class PhotonDoc {
                     context.add(ImmutableMap.of("formerName", existingName));
                 }
                 map.put("name", field);
+                for (String key : map.keySet()) {
+                    if (map.get(key).equals(existingName)) {
+                        map.put(key, field);
+                    }
+                }
             }
         }
     }
