@@ -46,10 +46,7 @@ public class AddressRow {
     /**
      * @return whether nominatim thinks this place is a town or city
      */
-    public boolean isCity(CountryCode countryCode) {
-        if (countryCode == CountryCode.NL) {
-            return "boundary".equals(osmKey) && "administrative".equals(osmValue) && 17 <= rankAddress && rankAddress < 21;
-        }
+    public boolean isCity() {
         return 13 <= rankAddress && rankAddress < 17;
     }
 
