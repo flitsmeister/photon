@@ -48,7 +48,7 @@ public class AddressRow {
      */
     public boolean isCity(CountryCode countryCode) {
         if (countryCode == CountryCode.NL) {
-            return "boundary".equals(osmKey) && "administrative".equals(osmValue) && 13 <= rankAddress && rankAddress < 21;
+            return "boundary".equals(osmKey) && "administrative".equals(osmValue) && 17 <= rankAddress && rankAddress < 21;
         }
         return 13 <= rankAddress && rankAddress < 17;
     }
@@ -108,6 +108,7 @@ public class AddressRow {
                 .add("name", name)
                 .add("osmKey", osmKey)
                 .add("osmValue", osmValue)
+                .add("rankAddress", rankAddress)
                 .toString();
     }
 }
