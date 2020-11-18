@@ -1,5 +1,6 @@
 package de.komoot.photon.nominatim.model;
 
+import com.neovisionaries.i18n.CountryCode;
 import lombok.Data;
 
 import java.util.Map;
@@ -16,7 +17,9 @@ public class AddressRow {
     private final String osmValue;
     private final int rankAddress;
 
-    public AddressType getAddressType() {
+    public AddressType getAddressType(CountryCode countryCode) {
+        if (countryCode == CountryCode.NL && rankAddress == 14) continue;
+
         return AddressType.fromRank(rankAddress);
     }
 

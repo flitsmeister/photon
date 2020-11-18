@@ -258,7 +258,7 @@ public class NominatimConnector {
         final List<AddressRow> addresses = getAddresses(doc);
         final AddressType doctype = doc.getAddressType();
         for (AddressRow address : addresses) {
-            AddressType atype = address.getAddressType();
+            AddressType atype = address.getAddressType(doc.getCountryCode());
 
             if (atype != null
                     && (atype == doctype || !doc.setAddressPartIfNew(atype, address.getName()))
