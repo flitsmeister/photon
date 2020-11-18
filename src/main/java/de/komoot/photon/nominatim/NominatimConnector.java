@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.neovisionaries.i18n.CountryCode;
+
 /**
  * Export nominatim data
  *
@@ -280,6 +282,7 @@ public class NominatimConnector {
         final AddressType doctype = doc.getAddressType();
         for (AddressRow address : addresses) {
             AddressType atype = address.getAddressType();
+            if (doc.getCountryCode() == CountryCode.NL && address.rankAddress == 14) continue;
 
             if (atype != null
                     && (atype == doctype || !doc.setAddressPartIfNew(atype, address.getName()))

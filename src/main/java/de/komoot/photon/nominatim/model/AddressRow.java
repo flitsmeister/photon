@@ -14,7 +14,7 @@ public class AddressRow {
     private final Map<String, String> name;
     private final String osmKey;
     private final String osmValue;
-    private final int rankAddress;
+    public final int rankAddress;
 
     public AddressType getAddressType() {
         return AddressType.fromRank(rankAddress);
