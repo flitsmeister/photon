@@ -24,6 +24,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.neovisionaries.i18n.CountryCode;
+
 /**
  * A Nominatim result consisting of the basic PhotonDoc for the object
  * and a map of attached house numbers together with their respective positions.
@@ -459,6 +461,7 @@ public class NominatimConnector {
         final List<AddressRow> addresses = getAddresses(doc);
         for (AddressRow address : addresses) {
             if (address.isCity()) {
+                if (doc.getCountryCode() == CountryCode.NL && address.rankAddress == 14) continue;
                 if (doc.getCity() == null) {
                     doc.setCity(address.getName());
                 } else {

@@ -17,7 +17,7 @@ public class AddressRow {
     final private Map<String, String> name;
     final private String osmKey;
     final private String osmValue;
-    final private int rankAddress;
+    final public int rankAddress;
 
     static private final String[] USEFUL_CONTEXT_KEYS = new String[]{"boundary", "landuse", "place"}; // must be in alphabetic order to speed up lookup
 
