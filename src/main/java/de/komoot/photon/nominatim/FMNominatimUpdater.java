@@ -1,17 +1,18 @@
 package de.komoot.photon.nominatim;
 
 import de.komoot.photon.PhotonDoc;
+import de.komoot.photon.ManualPhotonDoc;
 import de.komoot.photon.Updater;
 import de.komoot.photon.nominatim.model.UpdateRow;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import com.google.common.collect.ImmutableMap;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.json.*;
 
@@ -51,7 +52,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
     private void remove(JSONArray places) {
         for (int i = 0; i < places.length(); i++) {
-            updater.delete(places.getLong(i));
+            updater.delete(String.valueOf(places.getLong(i)));
         }
     }
 
@@ -71,7 +72,66 @@ public class FMNominatimUpdater extends NominatimUpdater {
             if (!create && !wasUseful) {
                 // only true when rank != 30
                 // if no documents for the place id exist this will likely cause moaning
-                updater.delete(placeId);
+                updater.delete(String.valueOf(placeId));
+            }
+        }
+    }
+
+    public void updateManualRecords(String prefix, JSONArray addresses, int startIndex, Boolean clean) {
+        if (updateLock.tryLock()) {
+            try {
+                if (clean) {
+                    System.out.println("Cleaning old " + prefix + " records");
+                    updater.cleanManualRecords(prefix);
+                    updater.finish();
+                    System.out.println("Cleaning finished");
+                }
+
+                System.out.println("Now importing " + addresses.length() + " addresses");
+                for (int i = 0; i < addresses.length(); i++) {
+                    if (i % 10000 == 0 && i > 0) {
+                        System.out.println(i);
+                        updater.finish();
+                    }
+
+                    JSONObject address = addresses.getJSONObject(i);
+
+                    Map<String, String> name = Collections.<String, String>emptyMap();
+                    if (address.has("name")) {
+                        name = ImmutableMap.of("name", address.getString("name"));
+                    }
+
+                    Map<String, String> extraValues = null;
+                    if (address.has("context")) {
+                        extraValues = new HashMap<String, String>();
+                        JSONArray context = address.getJSONArray("context");
+                        for (int j = 0; j < context.length(); j++) {
+                            extraValues.put("name", context.getString(j));
+                        }
+                    }
+
+                    PhotonDoc doc = new ManualPhotonDoc(
+                        prefix,
+                        i + startIndex,
+                        address.getDouble("latitude"),
+                        address.getDouble("longitude"),
+                        address.getString("street"),
+                        address.getString("housenumber"),
+                        address.getString("location"),
+                        address.getString("zipcode"),
+                        address.getString("country_code"),
+                        name,
+                        extraValues
+                    );
+
+                    doc.setCountry(exporter.getCountryNames(doc.getCountryCode().getAlpha2().toLowerCase()));
+
+                    updater.updateOrCreate(doc);
+                }
+                updater.finish();
+                System.out.println("Finished importing");
+            } finally {
+                updateLock.unlock();
             }
         }
     }
