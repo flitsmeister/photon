@@ -44,10 +44,11 @@ public class ReverseSearchRequestHandler<R extends ReverseRequest> extends Route
             json.put("message", e.getMessage());
             halt(e.getHttpStatus(), json.toString());
         }
+        Boolean debug = request.queryParams("debug") != null;
         ReverseRequestHandler<R> handler = requestHandlerFactory.createHandler(photonRequest);
-        List<JSONObject> results = handler.handle(photonRequest);
+        List<JSONObject> results = handler.handle(photonRequest, debug);
         JSONObject geoJsonResults = geoJsonConverter.convert(results);
-        if (request.queryParams("debug") != null)
+        if (debug)
             return geoJsonResults.toString(4);
 
         return geoJsonResults.toString();

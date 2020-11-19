@@ -9,5 +9,5 @@ import org.elasticsearch.index.query.QueryBuilder;
  * Created by Sachin Dole on 2/12/2015.
  */
 public interface ElasticsearchSearcher {
-    SearchResponse search(QueryBuilder queryBuilder, Integer limit);
+    SearchResponse search(QueryBuilder queryBuilder, Integer limit, Boolean debug);
 }
