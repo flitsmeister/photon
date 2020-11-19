@@ -22,7 +22,7 @@ import static spark.Spark.halt;
  */
 public class SearchRequestHandler extends RouteImpl {
     private static final String DEBUG_PARAMETER = "debug";
-    
+
     private final PhotonRequestFactory photonRequestFactory;
     private final PhotonRequestHandler requestHandler;
     private final ConvertToGeoJson geoJsonConverter;
@@ -45,12 +45,16 @@ public class SearchRequestHandler extends RouteImpl {
             json.put("message", e.getMessage());
             halt(e.getHttpStatus(), json.toString());
         }
-        List<JSONObject> results = requestHandler.handle(photonRequest);
+        Boolean debug = request.queryParams(DEBUG_PARAMETER) != null;
+        List<JSONObject> results = requestHandler.handle(photonRequest, debug);
         JSONObject geoJsonResults = geoJsonConverter.convert(results);
-        if (request.queryParams(DEBUG_PARAMETER) != null) {
-            JSONObject debug = new JSONObject();
-            debug.put("query", new JSONObject(requestHandler.dumpQuery(photonRequest)));
-            geoJsonResults.put(DEBUG_PARAMETER, debug);
+        if (debug) {
+            JSONObject jsonDebug = new JSONObject();
+            jsonDebug.put("query", new JSONObject(requestHandler.dumpQuery(photonRequest)));
+            geoJsonResults.put(DEBUG_PARAMETER, jsonDebug);
+
+            jsonDebug.put("total", requestHandler.total(photonRequest));
+
             return geoJsonResults.toString(4);
         }
 

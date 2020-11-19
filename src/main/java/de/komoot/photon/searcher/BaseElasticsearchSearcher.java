@@ -1,6 +1,7 @@
 package de.komoot.photon.searcher;
 
 import de.komoot.photon.elasticsearch.PhotonIndex;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -18,16 +19,17 @@ public class BaseElasticsearchSearcher {
         this.client = client;
     }
 
-    public SearchResponse search(QueryBuilder queryBuilder, Integer limit) {
+    public SearchResponse search(QueryBuilder queryBuilder, Integer limit, Boolean debug) {
         TimeValue timeout = TimeValue.timeValueSeconds(7);
-        return client.prepareSearch(PhotonIndex.NAME).
+        SearchRequestBuilder builder =  client.prepareSearch(PhotonIndex.NAME).
                 setSearchType(SearchType.QUERY_AND_FETCH).
                 setQuery(queryBuilder).
                 setSize(limit).
-                setTimeout(timeout).
-                execute().
-                actionGet();
-
+                setTimeout(timeout);
+        if (debug) {
+            builder.setExplain(true);
+        }
+        return builder.execute().actionGet();
     }
 
 }

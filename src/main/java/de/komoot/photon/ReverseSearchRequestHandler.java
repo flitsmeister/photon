@@ -43,9 +43,10 @@ public class ReverseSearchRequestHandler extends RouteImpl {
             json.put("message", e.getMessage());
             halt(e.getHttpStatus(), json.toString());
         }
-        List<JSONObject> results = requestHandler.handle(photonRequest);
+        Boolean debug = request.queryParams("debug") != null;
+        List<JSONObject> results = requestHandler.handle(photonRequest, debug);
         JSONObject geoJsonResults = geoJsonConverter.convert(results);
-        if (request.queryParams("debug") != null)
+        if (debug)
             return geoJsonResults.toString(4);
 
         return geoJsonResults.toString();
