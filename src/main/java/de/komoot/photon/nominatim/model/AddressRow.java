@@ -18,7 +18,8 @@ public class AddressRow {
     private final int rankAddress;
 
     public AddressType getAddressType(CountryCode countryCode) {
-        if (countryCode == CountryCode.NL && rankAddress == 14) continue;
+        if (countryCode == CountryCode.NL && rankAddress == 14) return null;
+        if (countryCode == CountryCode.BE && rankAddress == 20) return null;
 
         return AddressType.fromRank(rankAddress);
     }
