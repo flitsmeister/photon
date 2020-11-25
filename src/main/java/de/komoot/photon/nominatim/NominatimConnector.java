@@ -283,6 +283,7 @@ public class NominatimConnector {
         for (AddressRow address : addresses) {
             AddressType atype = address.getAddressType();
             if (doc.getCountryCode() == CountryCode.NL && address.rankAddress == 14) continue;
+            if (doc.getCountryCode() == CountryCode.BE && address.rankAddress == 20) continue;
 
             if (atype != null
                     && (atype == doctype || !doc.setAddressPartIfNew(atype, address.getName()))
