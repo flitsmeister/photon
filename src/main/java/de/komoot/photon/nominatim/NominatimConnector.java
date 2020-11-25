@@ -481,6 +481,8 @@ public class NominatimConnector {
             }
 
             if (address.isDistrict() && doc.getDistrict() == null) {
+                if (doc.getCountryCode() == CountryCode.BE && address.rankAddress == 20) continue;
+
                 doc.setDistrict(address.getName());
                 continue;
             }
