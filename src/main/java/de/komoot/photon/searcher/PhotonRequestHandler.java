@@ -38,7 +38,7 @@ public class PhotonRequestHandler {
     }
 
     public long total(PhotonRequest photonRequest) {
-        TagFilterQueryBuilder queryBuilder = buildQuery(photonRequest);
+        PhotonQueryBuilder queryBuilder = buildQuery(photonRequest);
         SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), 0, false);
         return results.getHits().getTotalHits();
     }
