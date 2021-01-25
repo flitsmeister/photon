@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.util.*;
 
+import de.komoot.photon.nominatim.model.AddressType;
+
 @Getter
 @Setter
 public class ManualPhotonDoc extends PhotonDoc  {
@@ -41,11 +43,11 @@ public class ManualPhotonDoc extends PhotonDoc  {
         this.prefix = prefix;
         this.index = index;
 
-        this.setStreet(new HashMap<String, String>() {
+        this.setAddressPartIfNew(AddressType.STREET, new HashMap<String, String>() {
             { put("name", street); }
         });
 
-        this.setCity(new HashMap<String, String>() {
+        this.setAddressPartIfNew(AddressType.CITY, new HashMap<String, String>() {
             { put("name", city); }
         });
 
