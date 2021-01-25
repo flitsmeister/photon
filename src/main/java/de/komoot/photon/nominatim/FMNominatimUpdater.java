@@ -62,10 +62,8 @@ public class FMNominatimUpdater extends NominatimUpdater {
             final List<PhotonDoc> updatedDocs = exporter.getByPlaceId(places.getLong(i));
             boolean wasUseful = false;
             for (PhotonDoc updatedDoc : updatedDocs) {
-                if (create && updatedDoc.isUsefulForIndex()) {
+                if (updatedDoc.isUsefulForIndex()) {
                     updater.create(updatedDoc);
-                } else if (!create && updatedDoc.isUsefulForIndex()) {
-                    updater.updateOrCreate(updatedDoc);
                     wasUseful = true;
                 }
             }
@@ -126,7 +124,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
                     doc.setCountry(exporter.getCountryNames(doc.getCountryCode().getAlpha2().toLowerCase()));
 
-                    updater.updateOrCreate(doc);
+                    updater.create(doc);
                 }
                 updater.finish();
                 System.out.println("Finished importing");
