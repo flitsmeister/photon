@@ -26,22 +26,16 @@ public class ManualPhotonDoc extends PhotonDoc  {
             prefix,
             index,
             "place",
-            "house_number",
-            name,
-            houseNumber,
-            Collections.<String, String>emptyMap(), // no address
-            Collections.<String, String>emptyMap(), // no extratags
-            (Envelope) null,
-            0,
-            0d, // importance
-            countryCode,
-            geometryFactory.createPoint(new Coordinate(longitude, latitude)),
-            0,
-            30
+            "house_number"
         );
 
         this.prefix = prefix;
         this.index = index;
+
+        this.names(name);
+        this.houseNumber(houseNumber);
+        this.centroid(geometryFactory.createPoint(new Coordinate(longitude, latitude)));
+        this.countryCode(countryCode);
 
         this.setAddressPartIfNew(AddressType.STREET, new HashMap<String, String>() {
             { put("name", street); }
@@ -51,7 +45,7 @@ public class ManualPhotonDoc extends PhotonDoc  {
             { put("name", city); }
         });
 
-        this.setPostcode(postcode);
+        this.postcode(postcode);
 
         if (extraValues != null) {
             this.getContext().add(extraValues);
