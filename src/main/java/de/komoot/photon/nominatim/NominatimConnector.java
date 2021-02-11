@@ -180,13 +180,24 @@ public class NominatimConnector {
             Geometry geometry = DBUtils.extractGeometry(rs, "bbox");
             Envelope envelope = geometry != null ? geometry.getEnvelopeInternal() : null;
 
+            Map<String, String> name = DBUtils.getMap(rs, "name");
+            try {
+                String country_code = rs.getString("country_code");
+                System.out.println(name);
+                System.out.println(country_code);
+                if (country_code != null && !name.containsKey("name:" + country_code)) {
+                    name.put("name:" + country_code, name.get("name"));
+                }
+            } catch (SQLException sqlex){
+            }
+
             PhotonDoc doc = new PhotonDoc(
                     rs.getLong("place_id"),
                     rs.getString("osm_type"),
                     rs.getLong("osm_id"),
                     rs.getString("class"),
                     rs.getString("type"),
-                    DBUtils.getMap(rs, "name"),
+                    name,
                     (String) null,
                     DBUtils.getMap(rs, "address"),
                     DBUtils.getMap(rs, "extratags"),
@@ -210,7 +221,7 @@ public class NominatimConnector {
     };
     private final String selectColsPlaceX = "place_id, osm_type, osm_id, class, type, name, housenumber, postcode, address, extratags, ST_Envelope(geometry) AS bbox, parent_place_id, linked_place_id, rank_address, rank_search, importance, country_code, centroid";
     private final String selectColsOsmline = "place_id, osm_id, parent_place_id, startnumber, endnumber, interpolationtype, postcode, country_code, linegeo";
-    private final String selectColsAddress = "p.place_id, p.name, p.class, p.type, p.rank_address";
+    private final String selectColsAddress = "p.place_id, p.name, p.class, p.type, p.rank_address, p.country_code";
     private Importer importer;
 
     protected Map<String, String> getCountryNames(String countrycode) {
