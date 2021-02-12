@@ -183,8 +183,6 @@ public class NominatimConnector {
             Map<String, String> name = DBUtils.getMap(rs, "name");
             try {
                 String country_code = rs.getString("country_code");
-                System.out.println(name);
-                System.out.println(country_code);
                 if (country_code != null && !name.containsKey("name:" + country_code)) {
                     name.put("name:" + country_code, name.get("name"));
                 }
