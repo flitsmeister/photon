@@ -52,27 +52,37 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
     private void remove(JSONArray places) {
         for (int i = 0; i < places.length(); i++) {
-            updater.delete(String.valueOf(places.getLong(i)));
+            try {
+                updater.delete(String.valueOf(places.getLong(i)));
+            } catch (Execption e) {
+                LOGGER.error("Deleting of %d failed", placeId);
+                LOGGER.error(e);
+            }
         }
     }
 
     public void update(JSONArray places, Boolean create) {
         for (int i = 0; i < places.length(); i++) {
-            long placeId = places.getLong(i);
-            final List<PhotonDoc> updatedDocs = exporter.getByPlaceId(places.getLong(i));
-            boolean wasUseful = false;
-            for (PhotonDoc updatedDoc : updatedDocs) {
-                if (create && updatedDoc.isUsefulForIndex()) {
-                    updater.create(updatedDoc);
-                } else if (!create && updatedDoc.isUsefulForIndex()) {
-                    updater.updateOrCreate(updatedDoc);
-                    wasUseful = true;
+            try {
+                long placeId = places.getLong(i);
+                final List<PhotonDoc> updatedDocs = exporter.getByPlaceId(places.getLong(i));
+                boolean wasUseful = false;
+                for (PhotonDoc updatedDoc : updatedDocs) {
+                    if (create && updatedDoc.isUsefulForIndex()) {
+                        updater.create(updatedDoc);
+                    } else if (!create && updatedDoc.isUsefulForIndex()) {
+                        updater.updateOrCreate(updatedDoc);
+                        wasUseful = true;
+                    }
                 }
-            }
-            if (!create && !wasUseful) {
-                // only true when rank != 30
-                // if no documents for the place id exist this will likely cause moaning
-                updater.delete(String.valueOf(placeId));
+                if (!create && !wasUseful) {
+                    // only true when rank != 30
+                    // if no documents for the place id exist this will likely cause moaning
+                    updater.delete(String.valueOf(placeId));
+                }
+            } catch (Execption e) {
+                LOGGER.error("Updating of %d failed", placeId);
+                LOGGER.error(e);
             }
         }
     }
