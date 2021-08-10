@@ -54,7 +54,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
         for (int i = 0; i < places.length(); i++) {
             try {
                 updater.delete(String.valueOf(places.getLong(i)));
-            } catch (Execption e) {
+            } catch (Exception e) {
                 LOGGER.error("Deleting of %d failed", places.getLong(i));
                 LOGGER.error(e);
             }
@@ -80,7 +80,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
                     // if no documents for the place id exist this will likely cause moaning
                     updater.delete(String.valueOf(placeId));
                 }
-            } catch (Execption e) {
+            } catch (Exception e) {
                 LOGGER.error("Updating of %d failed", placeId);
                 LOGGER.error(e);
             }
