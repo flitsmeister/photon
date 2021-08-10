@@ -55,7 +55,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
             try {
                 updater.delete(String.valueOf(places.getLong(i)));
             } catch (Execption e) {
-                LOGGER.error("Deleting of %d failed", placeId);
+                LOGGER.error("Deleting of %d failed", places.getLong(i));
                 LOGGER.error(e);
             }
         }
@@ -63,8 +63,8 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
     public void update(JSONArray places, Boolean create) {
         for (int i = 0; i < places.length(); i++) {
+            long placeId = places.getLong(i);
             try {
-                long placeId = places.getLong(i);
                 final List<PhotonDoc> updatedDocs = exporter.getByPlaceId(places.getLong(i));
                 boolean wasUseful = false;
                 for (PhotonDoc updatedDoc : updatedDocs) {
