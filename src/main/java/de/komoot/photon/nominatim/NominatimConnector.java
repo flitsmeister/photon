@@ -264,7 +264,7 @@ public class NominatimConnector {
             completePlace(result.getBaseDoc());
             return result.getDocsWithHousenumber();
         } catch (EmptyResultDataAccessException e) {
-            return new List<PhotonDoc>();
+            return new ArrayList<PhotonDoc>();
         }
     }
 
