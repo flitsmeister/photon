@@ -15,6 +15,7 @@ import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -258,9 +259,13 @@ public class NominatimConnector {
     }
 
     public List<PhotonDoc> getByPlaceId(long placeId) {
-        NominatimResult result = template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[] { placeId }, placeRowMapper);
-        completePlace(result.getBaseDoc());
-        return result.getDocsWithHousenumber();
+        try {
+            NominatimResult result = template.queryForObject("SELECT " + selectColsPlaceX + " FROM placex WHERE place_id = ?", new Object[] { placeId }, placeRowMapper);
+            completePlace(result.getBaseDoc());
+            return result.getDocsWithHousenumber();
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<PhotonDoc>();
+        }
     }
 
     public List<PhotonDoc> getInterpolationsByPlaceId(long placeId) {
