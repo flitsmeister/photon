@@ -56,7 +56,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
                 updater.delete(String.valueOf(places.getLong(i)));
             } catch (Exception e) {
                 LOGGER.error("Deleting of %d failed", places.getLong(i));
-                LOGGER.error(e);
+                LOGGER.error(e.toString());
             }
         }
     }
@@ -82,7 +82,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
                 }
             } catch (Exception e) {
                 LOGGER.error("Updating of %d failed", placeId);
-                LOGGER.error(e);
+                LOGGER.error(e.toString());
             }
         }
     }
