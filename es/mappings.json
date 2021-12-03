@@ -95,11 +95,7 @@
 						"type": "text",
 						"index": false,
 						"copy_to": [
-							"collector.default",
-							"name.en",
-							"name.de",
-							"name.fr",
-							"name.it"
+							"collector.default"
 						]
 					},
 					"int": {
@@ -218,28 +214,6 @@
 				}
 			},
 			"district": {
-				"properties": {
-					"default": {
-						"type": "text",
-						"index": false,
-						"copy_to": [
-							"collector.default"
-						]
-					}
-				}
-			},
-	  		"locality": {
-				"properties": {
-					"default": {
-						"type": "text",
-						"index": false,
-						"copy_to": [
-							"collector.default"
-						]
-					}
-				}
-			},
-			"county": {
 				"properties": {
 					"default": {
 						"type": "text",
