@@ -32,13 +32,7 @@
 				"properties": {
 					"default": {
 						"type": "text",
-						"analyzer": "index_ngram",
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						}
+						"analyzer": "index_ngram"
 					}
 				}
 			},
@@ -95,19 +89,6 @@
 					"alt": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
-						"copy_to": [
-							"collector.default"
-						]
-					},
-					"default": {
-						"type": "text",
-						"index": false,
 						"copy_to": [
 							"collector.default"
 						]
@@ -140,7 +121,7 @@
 							"collector.default"
 						]
 					},
-					"int": {
+					"default": {
 						"type": "text",
 						"index": false,
 						"fields": {
@@ -149,6 +130,13 @@
 								"analyzer": "index_raw"
 							}
 						},
+						"copy_to": [
+							"collector.default"
+						]
+					},
+					"int": {
+						"type": "text",
+						"index": false,
 						"copy_to": [
 							"collector.default"
 						]
@@ -156,12 +144,6 @@
 					"loc": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -169,12 +151,6 @@
 					"old": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]
@@ -182,12 +158,6 @@
 					"reg": {
 						"type": "text",
 						"index": false,
-						"fields": {
-							"raw": {
-								"type": "text",
-								"analyzer": "index_raw"
-							}
-						},
 						"copy_to": [
 							"collector.default"
 						]

@@ -38,8 +38,8 @@ public class IndexMapping {
 
     public IndexMapping addLanguages(String[] languages) {
         // define collector json strings
-        String copyToCollectorString = "{\"type\":\"text\",\"index\":false,\"copy_to\":[\"collector.{lang}\"]}";
-        String nameToCollectorString = "{\"type\":\"text\",\"index\":false,\"fields\":{\"ngrams\":{\"type\":\"text\",\"analyzer\":\"index_ngram\"},\"raw\":{\"type\":\"text\",\"analyzer\":\"index_raw\",\"search_analyzer\":\"search_raw\"}},\"copy_to\":[\"collector.{lang}\"]}";
+        String copyToCollectorString = "{\"type\":\"text\",\"index\":false,\"copy_to\":[\"collector.{lang}\", \"collector.default\"]}";
+        String nameToCollectorString = "{\"type\":\"text\",\"index\":false,\"copy_to\":[\"collector.{lang}\", \"collector.default\"]}";
         String collectorString = "{\"type\":\"text\",\"index\":false,\"fields\":{\"ngrams\":{\"type\":\"text\",\"analyzer\":\"index_ngram\"},\"raw\":{\"type\":\"text\",\"analyzer\":\"index_raw\",\"search_analyzer\":\"search_raw\"}},\"copy_to\":[\"collector.{lang}\"]}";
 
         JSONObject placeObject = mappings.optJSONObject("place");
@@ -69,11 +69,6 @@ public class IndexMapping {
             // add language specific collector to default for name
             JSONObject name = propertiesObject.optJSONObject("name");
             JSONObject nameProperties = name == null ? null : name.optJSONObject("properties");
-            if (nameProperties != null) {
-                JSONObject defaultObject = nameProperties.optJSONObject("default");
-                JSONArray copyToArray = defaultObject.optJSONArray("copy_to");
-                copyToArray.put("name." + lang);
-            }
 
             // add language specific collector
             addToCollector("collector", propertiesObject, collectorObject, lang);
