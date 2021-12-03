@@ -6,7 +6,7 @@ import com.beust.jcommander.ParameterException;
 import de.komoot.photon.elasticsearch.DatabaseProperties;
 import de.komoot.photon.elasticsearch.Server;
 import de.komoot.photon.nominatim.NominatimConnector;
-import de.komoot.photon.nominatim.NominatimUpdater;
+import de.komoot.photon.nominatim.FMNominatimUpdater;
 import de.komoot.photon.utils.CorsFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.client.Client;
@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static spark.Spark.*;
+import org.json.*;
 
 
 @Slf4j
@@ -67,13 +68,6 @@ public class App {
             // Update the index settings in case there are any changes.
             esServer.updateIndexSettings();
             esClient.admin().cluster().prepareHealth().setWaitForYellowStatus().get();
-
-            if (args.isNominatimUpdate()) {
-                shutdownES = true;
-                final NominatimUpdater nominatimUpdater = setupNominatimUpdater(args, esClient);
-                nominatimUpdater.update();
-                return;
-            }
 
             // no special action specified -> normal mode: start search API
             startApi(args, esClient);
@@ -127,23 +121,6 @@ public class App {
     }
 
     /**
-     * Prepare Nominatim updater
-     *
-     * @param args
-     * @param esNodeClient
-     */
-    private static NominatimUpdater setupNominatimUpdater(CommandLineArgs args, Client esNodeClient) {
-        // Get database properties and ensure that the version is compatible.
-        DatabaseProperties dbProperties = new DatabaseProperties();
-        dbProperties.loadFromDatabase(esNodeClient);
-
-        NominatimUpdater nominatimUpdater = new NominatimUpdater(args.getHost(), args.getPort(), args.getDatabase(), args.getUser(), args.getPassword());
-        Updater updater = new de.komoot.photon.elasticsearch.Updater(esNodeClient, dbProperties.getLanguages(), args.getExtraTags());
-        nominatimUpdater.setUpdater(updater);
-        return nominatimUpdater;
-    }
-
-    /**
      * start api to accept search requests via http
      *
      * @param args
@@ -176,10 +153,21 @@ public class App {
         get("reverse/", new ReverseSearchRequestHandler("reverse/", esNodeClient, dbProperties.getLanguages(), args.getDefaultLanguage()));
 
         // setup update API
-        final NominatimUpdater nominatimUpdater = setupNominatimUpdater(args, esNodeClient);
-        get("/nominatim-update", (Request request, Response response) -> {
-            new Thread(() -> nominatimUpdater.update()).start();
+        final FMNominatimUpdater nominatimUpdater = new FMNominatimUpdater(args.getHost(), args.getPort(), args.getDatabase(), args.getUser(), args.getPassword());
+        Updater updater = new de.komoot.photon.elasticsearch.Updater(esNodeClient, dbProperties.getLanguages(), args.getExtraTags());
+        nominatimUpdater.setUpdater(updater);
+
+        post("/fm-nominatim-update", (Request request, Response response) -> {
+            JSONObject changes = new JSONObject(request.body());
+            JSONArray delete = changes.getJSONArray("delete");
+            JSONArray create = changes.getJSONArray("create");
+            JSONArray modify = changes.getJSONArray("modify");
+            new Thread(() -> nominatimUpdater.update(create, modify, delete)).start();
             return "nominatim update started (more information in console output) ...";
+        });
+
+        get("/update-status", (Request request, Response response) -> {
+            return nominatimUpdater.isUpdating() ? "updating" : "";
         });
     }
 }

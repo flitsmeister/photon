@@ -10,12 +10,14 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.postgis.jts.JtsWrapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -142,11 +144,15 @@ public class NominatimConnector {
     }
 
     public List<PhotonDoc> getByPlaceId(long placeId) {
-        NominatimResult result = template.queryForObject(SELECT_COLS_PLACEX + " FROM placex WHERE place_id = ?",
-                                                         placeRowMapper, placeId);
-        assert(result != null);
-        completePlace(result.getBaseDoc());
-        return result.getDocsWithHousenumber();
+        try {
+            NominatimResult result = template.queryForObject(SELECT_COLS_PLACEX + " FROM placex WHERE place_id = ?",
+                                                            placeRowMapper, placeId);
+            assert(result != null);
+            completePlace(result.getBaseDoc());
+            return result.getDocsWithHousenumber();
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<PhotonDoc>();
+        }
     }
 
     public List<PhotonDoc> getInterpolationsByPlaceId(long placeId) {
