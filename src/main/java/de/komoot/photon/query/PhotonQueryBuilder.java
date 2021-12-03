@@ -58,8 +58,10 @@ public class PhotonQueryBuilder {
     private PhotonQueryBuilder(String query, String language, List<String> languages, boolean lenient, boolean fuzzy) {
         this.query = query;
 
+        QueryBuilder finalQuery;
+
         if (this.query.equals(matchAllQuery)) {
-            query4QueryBuilder = QueryBuilders.matchAllQuery();
+            finalQuery = QueryBuilders.matchAllQuery();
         } else {
             BoolQueryBuilder query4QueryBuilder = QueryBuilders.boolQuery();
 
@@ -136,11 +138,12 @@ public class PhotonQueryBuilder {
             query4QueryBuilder
                     .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query));
 
+            finalQuery = (QueryBuilder) query4QueryBuilder;
         }
 
         // Weigh the resulting score by importance. Use a linear scale function that ensures that the weight
         // never drops to 0 and cancels out the ES score.
-        finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(query4QueryBuilder, new FilterFunctionBuilder[]{
+        finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(finalQuery, new FilterFunctionBuilder[]{
                 new FilterFunctionBuilder(ScoreFunctionBuilders.linearDecayFunction("importance", "1.0", "0.6"))
         });
 
