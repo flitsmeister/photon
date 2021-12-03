@@ -68,7 +68,9 @@ public class PhotonQueryBuilder {
                             .prefixLength(2)
                             .analyzer("search_ngram")
                             .minimumShouldMatch("-1"))
-                    .minimumShouldMatch("1");
+                    .minimumShouldMatch("1")
+                    .should(QueryBuilders.matchQuery("state.raw", query).analyzer("search_raw").boost(0.000001f));
+
         } else {
             MultiMatchQueryBuilder builder =
                     QueryBuilders.multiMatchQuery(query).field("collector.default", 1.0f).type(MultiMatchQueryBuilder.Type.CROSS_FIELDS).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");

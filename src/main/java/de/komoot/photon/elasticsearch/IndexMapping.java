@@ -60,11 +60,13 @@ public class IndexMapping {
             addToCollector("city", propertiesObject, copyToCollectorObject, lang);
             addToCollector("context", propertiesObject, copyToCollectorObject, lang);
             addToCollector("country", propertiesObject, copyToCollectorObject, lang);
-            addToCollector("state", propertiesObject, copyToCollectorObject, lang);
             addToCollector("street", propertiesObject, copyToCollectorObject, lang);
             addToCollector("district", propertiesObject, copyToCollectorObject, lang);
             addToCollector("locality", propertiesObject, copyToCollectorObject, lang);
             addToCollector("name", propertiesObject, nameToCollectorObject, lang);
+
+            JSONObject copyToStateObject = new JSONObject("{\"type\":\"text\",\"index\":false,\"copy_to\":[\"state.raw\"]}");
+            addToCollector("state", propertiesObject, copyToStateObject, lang);
 
             // add language specific collector to default for name
             JSONObject name = propertiesObject.optJSONObject("name");
