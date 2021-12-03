@@ -51,7 +51,7 @@ public class PhotonQueryBuilder {
     protected ArrayList<FilterFunctionBuilder> alFilterFunction4QueryBuilder = new ArrayList<>(1);
 
 
-    private PhotonQueryBuilder(String query, String language, List<String> languages, boolean lenient) {
+    private PhotonQueryBuilder(String query, String language, List<String> languages, boolean lenient, boolean fuzzy) {
         BoolQueryBuilder query4QueryBuilder = QueryBuilders.boolQuery();
 
         // 1. All terms of the quey must be contained in the place record somehow. Be more lenient on second try.
@@ -59,12 +59,12 @@ public class PhotonQueryBuilder {
         if (lenient) {
             collectorQuery = QueryBuilders.boolQuery()
                     .should(QueryBuilders.matchQuery("collector.default", query)
-                            .fuzziness(Fuzziness.ONE)
+                            .fuzziness(fuzzy ? Fuzziness.AUTO : Fuzziness.ZERO)
                             .prefixLength(2)
                             .analyzer("search_ngram")
                             .minimumShouldMatch("-1"))
                     .should(QueryBuilders.matchQuery(String.format("collector.%s.ngrams", language), query)
-                            .fuzziness(Fuzziness.ONE)
+                            .fuzziness(fuzzy ? Fuzziness.AUTO : Fuzziness.ZERO)
                             .prefixLength(2)
                             .analyzer("search_ngram")
                             .minimumShouldMatch("-1"))
@@ -75,6 +75,7 @@ public class PhotonQueryBuilder {
 
             for (String lang : languages) {
                 builder.field(String.format("collector.%s.ngrams", lang), lang.equals(language) ? 1.0f : 0.6f);
+                builder.field(String.format("collector.%s.raw", lang), lang.equals(language) ? 1.0f : 0.6f).analyzer("search_raw");
             }
 
             collectorQuery = builder;
@@ -148,8 +149,8 @@ public class PhotonQueryBuilder {
      * @param language
      * @return An initialized {@link PhotonQueryBuilder photon query builder}.
      */
-    public static PhotonQueryBuilder builder(String query, String language, List<String> languages, boolean lenient) {
-        return new PhotonQueryBuilder(query, language, languages, lenient);
+    public static PhotonQueryBuilder builder(String query, String language, List<String> languages, boolean lenient, boolean fuzzy) {
+        return new PhotonQueryBuilder(query, language, languages, lenient, fuzzy);
     }
 
     public PhotonQueryBuilder withLocationBias(Point point, double scale, int zoom) {
@@ -175,12 +176,12 @@ public class PhotonQueryBuilder {
                 }).boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MAX);
         return this;
     }
-    
+
     public PhotonQueryBuilder withBoundingBox(Envelope bbox) {
         if (bbox == null) return this;
         bboxQueryBuilder = new GeoBoundingBoxQueryBuilder("coordinate");
         bboxQueryBuilder.setCorners(bbox.getMaxY(), bbox.getMinX(), bbox.getMinY(), bbox.getMaxX());
-        
+
         return this;
     }
 
@@ -336,8 +337,8 @@ public class PhotonQueryBuilder {
                 tagFilters.must(andQueryBuilderForExcludeTagFiltering);
             finalQueryBuilder.filter(tagFilters);
         }
-        
-        if (bboxQueryBuilder != null) 
+
+        if (bboxQueryBuilder != null)
             queryBuilderForTopLevelFilter.filter(bboxQueryBuilder);
 
         state = State.FINISHED;
