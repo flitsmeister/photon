@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 
 /**
  * Created by Sachin Dole on 2/12/2015.
@@ -18,16 +19,17 @@ public class BaseElasticsearchSearcher {
         this.client = client;
     }
 
-    public SearchResponse search(QueryBuilder queryBuilder, Integer limit) {
+    public SearchResponse search(QueryBuilder queryBuilder, Integer limit, Boolean debug) {
         TimeValue timeout = TimeValue.timeValueSeconds(7);
-        return client.prepareSearch(PhotonIndex.NAME).
+        SearchRequestBuilder builder = client.prepareSearch(PhotonIndex.NAME).
                 setSearchType(SearchType.QUERY_AND_FETCH).
                 setQuery(queryBuilder).
                 setSize(limit).
-                setTimeout(timeout).
-                execute().
-                actionGet();
-
+                setTimeout(timeout);
+        if (debug) {
+            builder.setExplain(true);
+        }
+        return builder.execute().actionGet();
     }
 
 }

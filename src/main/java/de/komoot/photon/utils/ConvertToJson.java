@@ -36,6 +36,7 @@ public class ConvertToJson {
             final JSONObject feature = new JSONObject();
             if (debugMode) {
                 feature.put("score", hit.getScore());
+                feature.put("score_explanation", hit.getExplanation());
                 feature.put("importance", source.get("importance"));
             }
             feature.put(Constants.TYPE, Constants.FEATURE);

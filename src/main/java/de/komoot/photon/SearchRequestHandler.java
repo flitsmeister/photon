@@ -48,6 +48,7 @@ public class SearchRequestHandler extends RouteImpl {
         if (photonRequest.getDebug()) {
             JSONObject debug = new JSONObject();
             debug.put("query", new JSONObject(requestHandler.dumpQuery(photonRequest)));
+            debug.put("total", requestHandler.total(photonRequest));
             geoJsonResults.put("debug", debug);
             return geoJsonResults.toString(4);
         }
