@@ -44,7 +44,7 @@ public class SearchRequestHandler extends RouteImpl {
             halt(e.getHttpStatus(), json.toString());
         }
         List<JSONObject> results = requestHandler.handle(photonRequest);
-        JSONObject geoJsonResults = geoJsonConverter.convert(results);
+        JSONObject geoJsonResults = geoJsonConverter.convert(results, photonRequest.getDebug());
         if (photonRequest.getDebug()) {
             JSONObject debug = new JSONObject();
             debug.put("query", new JSONObject(requestHandler.dumpQuery(photonRequest)));
