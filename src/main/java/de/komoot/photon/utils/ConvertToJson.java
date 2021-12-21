@@ -22,19 +22,21 @@ public class ConvertToJson {
     private static final String[] KEYS_LANG_SPEC = {Constants.NAME, Constants.COUNTRY, Constants.CITY, Constants.DISTRICT, Constants.LOCALITY, Constants.STREET, Constants.STATE, Constants.COUNTY};
     private static final String[] NAME_PRECEDENCE = {"default", "housename", "int", "loc", "reg", "alt", "old"};
     private final String lang;
+    private final boolean debugMode;
 
-    public ConvertToJson(String lang) {
+    public ConvertToJson(String lang, boolean debugMode) {
         this.lang = lang;
+        this.debugMode = debugMode;
     }
 
-    public List<JSONObject> convert(SearchResponse searchResponse, boolean debugMode) {
+    public List<JSONObject> convert(SearchResponse searchResponse) {
         SearchHit[] hits = searchResponse.getHits().getHits();
         final List<JSONObject> list = Lists.newArrayListWithExpectedSize(hits.length);
         for (SearchHit hit : hits) {
             final Map<String, Object> source = hit.getSource();
 
             final JSONObject feature = new JSONObject();
-            if (debugMode) {
+            if (this.debugMode) {
                 feature.put("score", hit.getScore());
                 feature.put("score_explanation", hit.getExplanation());
                 feature.put("importance", source.get("importance"));
