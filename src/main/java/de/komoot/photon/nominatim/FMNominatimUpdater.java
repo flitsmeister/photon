@@ -28,13 +28,21 @@ public class FMNominatimUpdater extends NominatimUpdater {
         super(host, port, database, username, password);
     }
 
-    public void update(JSONArray create, JSONArray modify, JSONArray delete) {
+    public void update(JSONArray create, JSONArray modify, JSONArray delete, boolean interpolations) {
         if (updateLock.tryLock()) {
             try {
                 LOGGER.info(String.format("Starting %d news", create.length()));
-                this.update(create, true);
+                if (interpolations) {
+                    this.updateInterpolations(create);
+                } else {
+                    this.update(create, true);
+                }
                 LOGGER.info(String.format("Starting %d updates", modify.length()));
-                this.update(modify, false);
+                if (interpolations) {
+                    this.updateInterpolations(modify);
+                } else {
+                    this.update(modify, true);
+                }
                 LOGGER.info(String.format("Starting %d removes", delete.length()));
                 this.remove(delete);
 
@@ -79,6 +87,21 @@ public class FMNominatimUpdater extends NominatimUpdater {
                     // only true when rank != 30
                     // if no documents for the place id exist this will likely cause moaning
                     updater.delete(placeId);
+                }
+            } catch (Exception e) {
+                LOGGER.error(String.format("Updating of %d failed", placeId));
+                LOGGER.error(e.toString());
+            }
+        }
+    }
+
+    public void updateInterpolations(JSONArray places) {
+        for (int i = 0; i < places.length(); i++) {
+            long placeId = places.getLong(i);
+            try {
+                final List<PhotonDoc> updatedDocs = exporter.getInterpolationsByPlaceId(places.getLong(i));
+                for (PhotonDoc updatedDoc : updatedDocs) {
+                    updater.create(updatedDoc);
                 }
             } catch (Exception e) {
                 LOGGER.error(String.format("Updating of %d failed", placeId));

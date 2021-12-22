@@ -162,7 +162,8 @@ public class App {
             JSONArray delete = changes.getJSONArray("delete");
             JSONArray create = changes.getJSONArray("create");
             JSONArray modify = changes.getJSONArray("modify");
-            new Thread(() -> nominatimUpdater.update(create, modify, delete)).start();
+            boolean interpolations = request.queryParamOrDefault("interpolations", "false").equals("true");
+            new Thread(() -> nominatimUpdater.update(create, modify, delete, interpolations)).start();
             return "nominatim update started (more information in console output) ...";
         });
 
