@@ -5,10 +5,10 @@
 - `brew install maven`
 
 ## Compile
-`mvn install -Dmaven.test.skip=true`
+`JAVA_HOME=/usr/local/Cellar/openjdk@11/11.0.12 mvn install -Dmaven.test.skip=true`
 
 ## Initial create of empty index
-`java -jar target/photon-*.jar -languages nl,en,de,fr,lb -recreate-index`
+`java -jar target/photon-*.jar -languages nl,en,de,fr,lb -host localhost -port 5432 -database nominatim -user nominatim -nominatim-import`
 
 This created a `photon_data` directory at the current location. To have a clean index, remove this
 
