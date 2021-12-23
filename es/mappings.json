@@ -205,11 +205,15 @@
 			},
 			"state": {
 				"properties": {
+					"raw": {
+						"type": "text",
+						"analyzer": "index_raw"
+					},
 					"default": {
 						"type": "text",
 						"index": false,
 						"copy_to": [
-							"collector.default"
+							"state.raw"
 						]
 					}
 				}

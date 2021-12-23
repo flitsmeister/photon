@@ -125,6 +125,7 @@ public class PhotonQueryBuilder {
         query4QueryBuilder
                 .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query));
 
+        query4QueryBuilder.should(QueryBuilders.matchQuery("state.raw", query).analyzer("search_raw").boost(0.000001f));
 
         // Weigh the resulting score by importance. Use a linear scale function that ensures that the weight
         // never drops to 0 and cancels out the ES score.
