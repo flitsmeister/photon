@@ -34,15 +34,17 @@ public class ConvertToJson {
             final Map<String, Object> source = hit.getSource();
 
             final JSONObject feature = new JSONObject();
-            if (debugMode) {
-                feature.put("score", hit.getScore());
-                feature.put("importance", source.get("importance"));
-            }
             feature.put(Constants.TYPE, Constants.FEATURE);
             feature.put(Constants.GEOMETRY, getPoint(source));
 
             // populate properties
             final JSONObject properties = new JSONObject();
+
+            if (debugMode) {
+                properties.put("score", hit.getScore());
+                properties.put("score_explanation", hit.getExplanation());
+                properties.put("importance", source.get("importance"));
+            }
 
             // language unspecific properties
             for (String key : KEYS_LANG_UNSPEC) {
