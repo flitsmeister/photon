@@ -29,7 +29,7 @@ public class PhotonRequestHandler {
         // for the case of deduplication we need a bit more results, #300
         int limit = photonRequest.getLimit();
         int extLimit = limit > 1 ? (int) Math.round(photonRequest.getLimit() * 1.5) : 1;
-        SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), extLimit);
+        SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), extLimit, photonRequest.getDebug());
         List<JSONObject> resultJsonObjects = new ConvertToJson(photonRequest.getLanguage()).convert(results, photonRequest.getDebug());
         StreetDupesRemover streetDupesRemover = new StreetDupesRemover(photonRequest.getLanguage());
         resultJsonObjects = streetDupesRemover.execute(resultJsonObjects);
@@ -41,6 +41,12 @@ public class PhotonRequestHandler {
 
     public String dumpQuery(PhotonRequest photonRequest) {
         return buildQuery(photonRequest).buildQuery().toString();
+    }
+
+    public long total(PhotonRequest photonRequest) {
+        PhotonQueryBuilder queryBuilder = buildQuery(photonRequest);
+        SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), 0, false);
+        return results.getHits().getTotalHits();
     }
 
    public PhotonQueryBuilder buildQuery(PhotonRequest photonRequest) {
