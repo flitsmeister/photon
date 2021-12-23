@@ -12,6 +12,8 @@ import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder.FilterFunctionBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.index.query.functionscore.WeightBuilder;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 
 import java.util.*;
 
@@ -66,9 +68,7 @@ public class PhotonQueryBuilder {
             BoolQueryBuilder query4QueryBuilder = QueryBuilders.boolQuery();
 
             // 1. All terms of the quey must be contained in the place record somehow. Be more lenient on second try.
-            QueryBuilder collectorQuery;
-            if (fuzzy || lenient) {
-                collectorQuery = QueryBuilders.boolQuery()
+            QueryBuilder collectorQuery = QueryBuilders.boolQuery()
                         .should(QueryBuilders.matchQuery("collector.default", query)
                                 .fuzziness(fuzzy ? Fuzziness.AUTO : Fuzziness.ZERO)
                                 .prefixLength(2)
@@ -78,19 +78,25 @@ public class PhotonQueryBuilder {
                                 .fuzziness(fuzzy ? Fuzziness.AUTO : Fuzziness.ZERO)
                                 .prefixLength(2)
                                 .analyzer("search_ngram")
-                                .minimumShouldMatch("-1"))
-                        .minimumShouldMatch(lenient ? "-1" : "100%");
-            } else {
-                MultiMatchQueryBuilder builder =
-                        QueryBuilders.multiMatchQuery(query).field("collector.default", 1.0f).type(MultiMatchQueryBuilder.Type.CROSS_FIELDS).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");
+                                .minimumShouldMatch(lenient ? "-1" : "100%"))
+                        .should(QueryBuilders.matchQuery(String.format("collector.%s.raw", language), query)
+                                .fuzziness(fuzzy ? Fuzziness.AUTO : Fuzziness.ZERO)
+                                .prefixLength(2)
+                                .analyzer("search_raw")
+                                .minimumShouldMatch(lenient ? "-1" : "100%"))
+                        .minimumShouldMatch("1");
 
-                for (String lang : languages) {
-                    builder.field(String.format("collector.%s.ngrams", lang), lang.equals(language) ? 1.0f : 0.6f);
-                    builder.field(String.format("collector.%s.raw", lang), lang.equals(language) ? 1.0f : 0.6f).analyzer("search_raw");
-                }
+            // } else {
+            //     MultiMatchQueryBuilder builder =
+            //             QueryBuilders.multiMatchQuery(query).field("collector.default", 1.0f).type(MultiMatchQueryBuilder.Type.CROSS_FIELDS).prefixLength(2).analyzer("search_ngram").minimumShouldMatch("100%");
 
-                collectorQuery = builder;
-            }
+            //     for (String lang : languages) {
+            //         builder.field(String.format("collector.%s.ngrams", lang), lang.equals(language) ? 1.0f : 0.6f);
+            //         builder.field(String.format("collector.%s.raw", lang), lang.equals(language) ? 1.0f : 0.6f).analyzer("search_raw");
+            //     }
+
+            //     collectorQuery = builder;
+            // }
 
             query4QueryBuilder.must(collectorQuery);
 
@@ -109,32 +115,45 @@ public class PhotonQueryBuilder {
             }));
 
             // 3. Either the name or housenumber must be in the query terms.
-            String defLang = "default".equals(language) ? languages.get(0) : language;
-            MultiMatchQueryBuilder nameNgramQuery = QueryBuilders.multiMatchQuery(query)
-                    .type(MultiMatchQueryBuilder.Type.BEST_FIELDS)
-                    .fuzziness(lenient ? Fuzziness.ONE : Fuzziness.ZERO)
-                    .analyzer("search_ngram");
+            // String defLang = "default".equals(language) ? languages.get(0) : language;
+            // MultiMatchQueryBuilder nameNgramQuery = QueryBuilders.multiMatchQuery(query)
+            //         .type(MultiMatchQueryBuilder.Type.BEST_FIELDS)
+            //         .fuzziness(lenient ? Fuzziness.ONE : Fuzziness.ZERO)
+            //         .analyzer("search_ngram");
 
-            for (String lang: languages) {
-                nameNgramQuery.field(String.format("name.%s.ngrams", lang), lang.equals(defLang) ? 1.0f : 0.4f);
-            }
+            // for (String lang: languages) {
+            //     nameNgramQuery.field(String.format("name.%s.ngrams", lang), lang.equals(defLang) ? 1.0f : 0.4f);
+            // }
 
-            for (String alt: ALT_NAMES) {
-                nameNgramQuery.field(String.format("name.%s.raw", alt), 0.4f);
-            }
+            // for (String alt: ALT_NAMES) {
+            //     nameNgramQuery.field(String.format("name.%s.raw", alt), 0.4f);
+            // }
 
-            if (query.indexOf(',') < 0 && query.indexOf(' ') < 0) {
-                query4QueryBuilder.must(nameNgramQuery.boost(2f));
-            } else {
-                query4QueryBuilder.must(QueryBuilders.boolQuery()
-                                            .should(nameNgramQuery)
-                                            .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
-                                            .minimumShouldMatch("1"));
-            }
+            // if (query.indexOf(',') < 0 && query.indexOf(' ') < 0) {
+            //     query4QueryBuilder.must(nameNgramQuery.boost(2f));
+            // } else {
+            //     query4QueryBuilder.must(QueryBuilders.boolQuery()
+            //                                 .should(nameNgramQuery)
+            //                                 .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
+            //                                 .minimumShouldMatch("1"));
+            // }
 
             // 4. Rerank results for having the full name in the default language.
-            query4QueryBuilder
-                    .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query));
+            // query4QueryBuilder
+            //         .should(QueryBuilders.matchQuery(String.format("name.%s.raw", language), query));
+
+            // Filter for later: records that have a housenumber and no name must only appear when the housenumber matches.
+            query4QueryBuilder.must(QueryBuilders.boolQuery()
+                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
+                .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
+                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery()
+                    .must(QueryBuilders.existsQuery("housenumber"))
+                    .mustNot(QueryBuilders.existsQuery("name.default.raw"))
+                )));
+
+            query4QueryBuilder.should(QueryBuilders.matchQuery("name.default.raw", query).boost(10)
+                            .analyzer("search_raw").minimumShouldMatch("100%"));
+
 
             query4QueryBuilder.should(QueryBuilders.matchQuery("state.raw", query).analyzer("search_raw").boost(0.000001f));
 
@@ -143,15 +162,10 @@ public class PhotonQueryBuilder {
 
         // Weigh the resulting score by importance. Use a linear scale function that ensures that the weight
         // never drops to 0 and cancels out the ES score.
+        String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
         finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(finalQuery, new FilterFunctionBuilder[]{
-                new FilterFunctionBuilder(ScoreFunctionBuilders.linearDecayFunction("importance", "1.0", "0.6"))
-        });
-
-        // Filter for later: records that have a housenumber and no name must only appear when the housenumber matches.
-        queryBuilderForTopLevelFilter = QueryBuilders.boolQuery()
-                .should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("housenumber")))
-                .should(QueryBuilders.matchQuery("housenumber", query).analyzer("standard"))
-                .should(QueryBuilders.existsQuery(String.format("name.%s.raw", language)));
+                new FilterFunctionBuilder(ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, new HashMap<String, Object>())))
+        }).boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MULTIPLY);
 
         state = State.PLAIN;
     }
@@ -184,10 +198,13 @@ public class PhotonQueryBuilder {
         params.put("lon", point.getX());
         params.put("lat", point.getY());
 
+        String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
+        String strCodeDistance = "double dist = doc['coordinate'].planeDistance(params.lat, params.lon); " +
+                "double score = 0.1 + " + scale + " / (1.0 + dist * 0.001 / 10.0); " +
+                "score";
         finalQueryWithoutTagFilterBuilder =
                 QueryBuilders.functionScoreQuery(finalQueryWithoutTagFilterBuilder, new FilterFunctionBuilder[] {
-                     new FilterFunctionBuilder(ScoreFunctionBuilders.exponentialDecayFunction("coordinate", params, radius + "km", radius / 10 + "km", 0.8)),
-                     new FilterFunctionBuilder(ScoreFunctionBuilders.linearDecayFunction("importance", "1.0", scale))
+                    new FilterFunctionBuilder(ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCodeDistance, params)))
                 }).boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MAX);
         return this;
     }
@@ -342,7 +359,7 @@ public class PhotonQueryBuilder {
     public QueryBuilder buildQuery() {
         if (state.equals(State.FINISHED)) return finalQueryBuilder;
 
-        finalQueryBuilder = QueryBuilders.boolQuery().must(finalQueryWithoutTagFilterBuilder).filter(queryBuilderForTopLevelFilter);
+        finalQueryBuilder = QueryBuilders.boolQuery().must(finalQueryWithoutTagFilterBuilder);
 
         if (state.equals(State.FILTERED)) {
             BoolQueryBuilder tagFilters = QueryBuilders.boolQuery();
