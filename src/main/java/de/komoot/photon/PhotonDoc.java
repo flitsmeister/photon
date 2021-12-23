@@ -161,6 +161,10 @@ public class PhotonDoc {
         return this;
     }
 
+    public String getIndexId() {
+        return String.valueOf(this.placeId);
+    }
+
     public String getUid() {
         if (houseNumber == null)
             return String.valueOf(placeId);

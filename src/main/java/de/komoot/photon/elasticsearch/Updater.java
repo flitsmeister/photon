@@ -35,7 +35,7 @@ public class Updater implements de.komoot.photon.Updater {
     @Override
     public void create(PhotonDoc doc) {
         try {
-            bulkRequest.add(esClient.prepareIndex(PhotonIndex.NAME, PhotonIndex.TYPE).setSource(Utils.convert(doc, languages, extraTags)).setId(String.valueOf(doc.getPlaceId())));
+            bulkRequest.add(esClient.prepareIndex(PhotonIndex.NAME, PhotonIndex.TYPE).setSource(Utils.convert(doc, languages, extraTags)).setId(doc.getIndexId()));
         } catch (IOException e) {
             log.error(String.format("creation of new doc [%s] failed", doc), e);
         }
@@ -43,6 +43,22 @@ public class Updater implements de.komoot.photon.Updater {
 
     public void delete(Long id) {
         this.bulkRequest.add(this.esClient.prepareDelete(PhotonIndex.NAME, PhotonIndex.TYPE, String.valueOf(id)));
+    }
+
+    public void delete(String id) {
+        this.bulkRequest.add(this.esClient.prepareDelete(PhotonIndex.NAME, PhotonIndex.TYPE, id));
+    }
+
+    public void cleanManualRecords(String prefix) {
+        int i = 0;
+        while (true) {
+            String id = prefix + ":" + String.valueOf(i++);
+            final boolean exists = this.esClient.get(this.esClient.prepareGet("photon", "place", id).request()).actionGet().isExists();
+            if (exists)
+                this.delete(id);
+            else
+                break;
+        }
     }
 
     private void updateDocuments() {
