@@ -18,7 +18,6 @@ public class PhotonRequestHandler {
 
     private final BaseElasticsearchSearcher elasticsearchSearcher;
     private final List<String> supportedLanguages;
-    private boolean lastLenient = false;
 
     public PhotonRequestHandler(BaseElasticsearchSearcher elasticsearchSearcher, List<String> supportedLanguages) {
         this.elasticsearchSearcher = elasticsearchSearcher;
@@ -26,16 +25,11 @@ public class PhotonRequestHandler {
     }
 
     public List<JSONObject> handle(PhotonRequest photonRequest) {
-        lastLenient = false;
-        PhotonQueryBuilder queryBuilder = buildQuery(photonRequest, false);
+        PhotonQueryBuilder queryBuilder = buildQuery(photonRequest);
         // for the case of deduplication we need a bit more results, #300
         int limit = photonRequest.getLimit();
         int extLimit = limit > 1 ? (int) Math.round(photonRequest.getLimit() * 1.5) : 1;
         SearchResponse results = elasticsearchSearcher.search(queryBuilder.buildQuery(), extLimit);
-        if (results.getHits().getTotalHits() == 0) {
-            lastLenient = true;
-            results = elasticsearchSearcher.search(buildQuery(photonRequest, true).buildQuery(), extLimit);
-        }
         List<JSONObject> resultJsonObjects = new ConvertToJson(photonRequest.getLanguage()).convert(results, photonRequest.getDebug());
         StreetDupesRemover streetDupesRemover = new StreetDupesRemover(photonRequest.getLanguage());
         resultJsonObjects = streetDupesRemover.execute(resultJsonObjects);
@@ -46,12 +40,12 @@ public class PhotonRequestHandler {
     }
 
     public String dumpQuery(PhotonRequest photonRequest) {
-        return buildQuery(photonRequest, lastLenient).buildQuery().toString();
+        return buildQuery(photonRequest).buildQuery().toString();
     }
 
-   public PhotonQueryBuilder buildQuery(PhotonRequest photonRequest, boolean lenient) {
+   public PhotonQueryBuilder buildQuery(PhotonRequest photonRequest) {
         return PhotonQueryBuilder.
-                builder(photonRequest.getQuery(), photonRequest.getLanguage(), supportedLanguages, lenient).
+                builder(photonRequest.getQuery(), photonRequest.getSearchLanguage(), supportedLanguages, photonRequest.isLenient(), photonRequest.isFuzzy()).
                 withTags(photonRequest.tags()).
                 withKeys(photonRequest.keys()).
                 withValues(photonRequest.values()).
