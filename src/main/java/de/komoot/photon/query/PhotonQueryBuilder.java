@@ -199,9 +199,9 @@ public class PhotonQueryBuilder {
         params.put("lat", point.getY());
 
         String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
-        String strCodeDistance = "score = 0; if (doc['coordinate'].getValue() != null) { " +
+        String strCodeDistance = "double score = 0; if (doc['coordinate'].getValue() != null) { " +
                 "double dist = doc['coordinate'].planeDistance(params.lat, params.lon); " +
-                "double score = 0.1 + " + scale + " / (1.0 + dist * 0.001 / 10.0); " +
+                "score = 0.1 + " + scale + " / (1.0 + dist * 0.001 / 10.0); " +
                 "} score";
         finalQueryWithoutTagFilterBuilder =
                 QueryBuilders.functionScoreQuery(finalQueryWithoutTagFilterBuilder, new FilterFunctionBuilder[] {
