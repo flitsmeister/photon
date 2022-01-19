@@ -60,8 +60,13 @@ public class FMNominatimUpdater extends NominatimUpdater {
 
     private void remove(JSONArray places) {
         for (int i = 0; i < places.length(); i++) {
+            long placeId = places.optLong(i);
             try {
-                updater.delete(places.getLong(i));
+                if (placeId == 0) {
+                    updater.delete(places.getString(i));
+                } else {
+                    updater.delete(placeId);
+                }
             } catch (Exception e) {
                 LOGGER.error(String.format("Deleting of %d failed", places.getLong(i)));
                 LOGGER.error(e.toString());
