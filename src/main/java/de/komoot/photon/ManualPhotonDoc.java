@@ -23,7 +23,7 @@ public class ManualPhotonDoc extends PhotonDoc  {
         super(index, prefix, index, "place", "house_number");
 
         this.names(name);
-        this.houseNumber(houseNumber);
+        if (houseNumber != null) this.houseNumber(houseNumber);
         this.countryCode(countryCode);
         this.centroid(geometryFactory.createPoint(new Coordinate(longitude, latitude)));
         this.rankAddress(30);
@@ -31,15 +31,17 @@ public class ManualPhotonDoc extends PhotonDoc  {
         this.prefix = prefix;
         this.index = index;
 
-        this.setAddressPartIfNew(AddressType.STREET, new HashMap<String, String>() {
-            { put("name", street); }
-        });
+        if (street != null) {
+            this.setAddressPartIfNew(AddressType.STREET, new HashMap<String, String>() {
+                { put("name", street); }
+            });
+        }
 
         this.setAddressPartIfNew(AddressType.CITY, new HashMap<String, String>() {
             { put("name", city); }
         });
 
-        this.postcode(postcode);
+        if (postcode != null) this.postcode(postcode);
 
         if (extraValues != null) {
             this.getContext().add(extraValues);
