@@ -139,12 +139,12 @@ public class FMNominatimUpdater extends NominatimUpdater {
                         name = ImmutableMap.of("name", address.getString("name"));
                     }
 
-                    Map<String, String> extraValues = null;
+                    List<String> extraValues = null;
                     if (address.has("context")) {
-                        extraValues = new HashMap<String, String>();
+                        extraValues = new ArrayList<String>();
                         JSONArray context = address.getJSONArray("context");
                         for (int j = 0; j < context.length(); j++) {
-                            extraValues.put("name", context.getString(j));
+                            extraValues.add(context.getString(j));
                         }
                     }
 
