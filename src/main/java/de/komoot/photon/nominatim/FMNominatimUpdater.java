@@ -153,10 +153,10 @@ public class FMNominatimUpdater extends NominatimUpdater {
                         i + startIndex,
                         address.getDouble("latitude"),
                         address.getDouble("longitude"),
-                        address.getString("street"),
-                        address.getString("housenumber"),
+                        address.optString("street"),
+                        address.optString("housenumber"),
                         address.getString("location"),
-                        address.getString("zipcode"),
+                        address.optString("zipcode"),
                         address.getString("country_code"),
                         name,
                         extraValues
