@@ -11,4 +11,6 @@ public interface Updater {
     public void delete(Long id);
 
     public void finish();
+
+    public void cleanManualRecords(String prefix);
 }

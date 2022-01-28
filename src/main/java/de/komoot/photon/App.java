@@ -170,5 +170,13 @@ public class App {
         get("/update-status", (Request request, Response response) -> {
             return nominatimUpdater.isUpdating() ? "updating" : "";
         });
+
+        post("/upload-manual-records", (Request request, Response response) -> {
+            JSONArray addresses = new JSONArray(request.body());
+            int index = Integer.parseInt(request.queryParamOrDefault("index", "0"));
+            String prefix = request.queryParams("prefix");
+            new Thread(() -> nominatimUpdater.updateManualRecords(prefix, addresses, index, index == 0)).start();
+            return "nominatim update started (more information in console output) ...";
+        });
     }
 }
