@@ -280,13 +280,21 @@ public class NominatimConnector {
     private void completePlace(PhotonDoc doc) {
         final List<AddressRow> addresses = getAddresses(doc);
         final AddressType doctype = doc.getAddressType();
+        Boolean dutchRank16City = false;
         for (AddressRow address : addresses) {
             AddressType atype = address.getAddressType();
             if (doc.getCountryCode() == CountryCode.BE && address.rankAddress == 20) continue;
+            if (doc.getCountryCode() == CountryCode.NL && address.rankAddress == 16) {
+                dutchRank16City = true;
+            };
 
             if (atype != null
                     && (atype == doctype || !doc.setAddressPartIfNew(atype, address.getName()))
                     && address.isUsefulForContext()) {
+
+                if (doc.getCountryCode() == CountryCode.NL && address.rankAddress == 14 && dutchRank16City) { // Dit is de gemeente, skip deze als de plaats al gezet is. e.g.: Bij Bennekom geen Ede indexeren in de context
+                    continue;
+                }
                 // no specifically handled item, check if useful for context
                 doc.getContext().add(address.getName());
             }
