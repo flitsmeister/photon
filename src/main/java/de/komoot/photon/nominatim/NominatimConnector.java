@@ -31,7 +31,7 @@ import com.neovisionaries.i18n.CountryCode;
 public class NominatimConnector {
     private static final String SELECT_COLS_PLACEX = "SELECT place_id, osm_type, osm_id, class, type, name, postcode, address, extratags, ST_Envelope(geometry) AS bbox, parent_place_id, linked_place_id, rank_address, rank_search, importance, country_code, centroid";
     private static final String SELECT_COLS_OSMLINE = "SELECT place_id, osm_id, parent_place_id, startnumber, endnumber, interpolationtype, postcode, country_code, linegeo";
-    private static final String SELECT_COLS_ADDRESS = "SELECT p.name, p.class, p.type, p.rank_address";
+    private static final String SELECT_COLS_ADDRESS = "SELECT p.name, p.class, p.type, p.rank_address, p.admin_level";
 
     private final DBDataAdapter dbutils;
     private final JdbcTemplate template;
@@ -172,7 +172,9 @@ public class NominatimConnector {
                 dbutils.getMap(rs, "name"),
                 rs.getString("class"),
                 rs.getString("type"),
-                rs.getInt("rank_address")
+                rs.getInt("rank_address"),
+                rs.getInt("admin_level"),
+                doc.getCountryCode()
         );
 
         AddressType atype = doc.getAddressType();
@@ -280,7 +282,6 @@ public class NominatimConnector {
         final AddressType doctype = doc.getAddressType();
         for (AddressRow address : addresses) {
             AddressType atype = address.getAddressType();
-            if (doc.getCountryCode() == CountryCode.NL && address.rankAddress == 14) continue;
             if (doc.getCountryCode() == CountryCode.BE && address.rankAddress == 20) continue;
 
             if (atype != null
