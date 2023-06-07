@@ -131,7 +131,11 @@
 							}
 						},
 						"copy_to": [
-							"collector.default"
+							"collector.default",
+							"collector.nl",
+							"collector.de",
+							"collector.fr",
+							"collector.en"
 						]
 					},
 					"int": {
