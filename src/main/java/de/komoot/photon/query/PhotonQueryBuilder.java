@@ -151,7 +151,7 @@ public class PhotonQueryBuilder {
                     .mustNot(QueryBuilders.existsQuery("name.default.raw"))
                 )));
 
-            query4QueryBuilder.should(QueryBuilders.matchQuery("name.default.raw", query).boost(10)
+            query4QueryBuilder.should(QueryBuilders.matchQuery("name.default.raw", query).boost(2)
                             .analyzer("search_raw").minimumShouldMatch("100%"));
 
 
@@ -162,10 +162,14 @@ public class PhotonQueryBuilder {
 
         // Weigh the resulting score by importance. Use a linear scale function that ensures that the weight
         // never drops to 0 and cancels out the ES score.
-        String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
-        finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(finalQuery, new FilterFunctionBuilder[]{
-                new FilterFunctionBuilder(ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, new HashMap<String, Object>())))
-        }).boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MULTIPLY);
+        // String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
+        // finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(finalQuery, new FilterFunctionBuilder[]{
+        //         new FilterFunctionBuilder(ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, new HashMap<String, Object>())))
+        // }).boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MULTIPLY);
+
+        finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(query4QueryBuilder, new FilterFunctionBuilder[]{
+                new FilterFunctionBuilder(ScoreFunctionBuilders.linearDecayFunction("importance", "1.0", "0.6"))
+        });
 
         state = State.PLAIN;
     }
@@ -205,7 +209,8 @@ public class PhotonQueryBuilder {
                 "} score";
         finalQueryWithoutTagFilterBuilder =
                 QueryBuilders.functionScoreQuery(finalQueryWithoutTagFilterBuilder, new FilterFunctionBuilder[] {
-                    new FilterFunctionBuilder(ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCodeDistance, params)))
+                    new FilterFunctionBuilder(ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCodeDistance, params))),
+                    new FilterFunctionBuilder(ScoreFunctionBuilders.linearDecayFunction("importance", "1.0", scale))
                 }).boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MAX);
         return this;
     }
