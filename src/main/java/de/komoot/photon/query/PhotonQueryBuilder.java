@@ -162,10 +162,6 @@ public class PhotonQueryBuilder {
 
         // Weigh the resulting score by importance. Use a linear scale function that ensures that the weight
         // never drops to 0 and cancels out the ES score.
-        // String strCode = "double importance = doc['importance'].value; double score = 1 + (importance === 0 ? 5 : importance * 100); score";
-        // finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(finalQuery, new FilterFunctionBuilder[]{
-        //         new FilterFunctionBuilder(ScoreFunctionBuilders.scriptFunction(new Script(ScriptType.INLINE, "painless", strCode, new HashMap<String, Object>())))
-        // }).boostMode(CombineFunction.MULTIPLY).scoreMode(ScoreMode.MULTIPLY);
 
         finalQueryWithoutTagFilterBuilder = QueryBuilders.functionScoreQuery(query4QueryBuilder, new FilterFunctionBuilder[]{
                 new FilterFunctionBuilder(ScoreFunctionBuilders.linearDecayFunction("importance", "1.0", "0.6"))
