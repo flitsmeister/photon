@@ -82,7 +82,8 @@ public class NominatimConnector {
                     .postcode(rs.getString("postcode"));
 
             double importance = rs.getDouble("importance");
-            doc.importance(rs.wasNull() ? (0.75 - rs.getInt("rank_search") / 40d) : importance);
+            // doc.importance(rs.wasNull() ? (0.75 - rs.getInt("rank_search") / 40d) : importance);
+            doc.importance(0.75 - rs.getInt("rank_search") / 40d);
 
             completePlace(doc);
             // Add address last, so it takes precedence.
