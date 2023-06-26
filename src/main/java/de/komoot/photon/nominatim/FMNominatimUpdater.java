@@ -115,7 +115,7 @@ public class FMNominatimUpdater extends NominatimUpdater {
         }
     }
 
-    public void updateManualRecords(String prefix, JSONArray addresses, int startIndex, Boolean clean) {
+    public Boolean updateManualRecords(String prefix, JSONArray addresses, int startIndex, Boolean clean) {
         if (updateLock.tryLock()) {
             try {
                 if (clean) {
@@ -170,6 +170,9 @@ public class FMNominatimUpdater extends NominatimUpdater {
             } finally {
                 updateLock.unlock();
             }
+            return true;
+        } else {
+            return false;
         }
     }
 }

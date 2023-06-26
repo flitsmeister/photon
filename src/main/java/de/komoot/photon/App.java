@@ -175,8 +175,12 @@ public class App {
             JSONArray addresses = new JSONArray(request.body());
             int index = Integer.parseInt(request.queryParamOrDefault("index", "0"));
             String prefix = request.queryParams("prefix");
-            new Thread(() -> nominatimUpdater.updateManualRecords(prefix, addresses, index, index == 0)).start();
-            return "nominatim update started (more information in console output) ...";
+            if (nominatimUpdater.updateManualRecords(prefix, addresses, index, index == 0)) {
+                response.status(200);
+            } else {
+                response.status(500);
+            }
+            return response;
         });
     }
 }
