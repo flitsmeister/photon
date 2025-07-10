@@ -36,6 +36,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest;
+
 /**
  * Helper class to start/stop ElasticSearch node and get ElasticSearch clients.
  */
@@ -121,6 +123,13 @@ public class Server {
     public void refreshIndexes() {
         esClient.admin().cluster().prepareHealth().setWaitForYellowStatus().get();
         esClient.admin().indices().prepareRefresh(PhotonIndex.NAME).get();
+    }
+
+    public void mergeIndexes() {
+        ForceMergeRequest request = new ForceMergeRequest(PhotonIndex.NAME)
+            .maxNumSegments(1)
+            .flush(true);
+        esClient.admin().indices().forceMerge(request).actionGet();
     }
 
     /**
