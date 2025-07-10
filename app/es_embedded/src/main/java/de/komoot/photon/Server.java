@@ -126,6 +126,7 @@ public class Server {
     }
 
     public void mergeIndexes() {
+        LOGGER.info("Merging indexes into a single segment. Server will exit after merging.");
         ForceMergeRequest request = new ForceMergeRequest(PhotonIndex.NAME)
             .maxNumSegments(1)
             .flush(true);
