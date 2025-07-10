@@ -53,6 +53,7 @@ public class App {
             }
 
             if (args.isMergeIndexes()) {
+                shutdownES = true;
                 esServer.mergeIndexes();
                 return;
             }
