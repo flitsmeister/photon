@@ -32,6 +32,9 @@ public class CommandLineArgs {
     @Parameter(names = "-nominatim-update", description = "Fetch updates from nominatim database into photon and exit (updates the index only without offering an API).")
     private boolean nominatimUpdate = false;
 
+    @Parameter(names = "-merge-indexes", description = "Merge the indexes into a single segment and exit.")
+    private boolean mergeIndexes = false;
+
     @Parameter(names = "-languages", description = "Comma-separated list of languages to use. On import sets the name translations to use (default: de,en,fr,it). When running, the languages to be searched may be further restricted.")
     private List<String> languages = new ArrayList<>();
 
@@ -79,7 +82,7 @@ public class CommandLineArgs {
 
     @Parameter(names = "-cors-any", description = "Enable cross-site resource sharing for any origin.")
     private boolean corsAnyOrigin = false;
-    
+
     @Parameter(names = "-cors-origin", description = "Comma-separated list of origins for which to enable cross-site resource sharing.")
     private List<String> corsOrigin = new ArrayList<>();
 
@@ -117,6 +120,10 @@ public class CommandLineArgs {
 
     public boolean isNominatimImport() {
         return this.nominatimImport;
+    }
+
+    public boolean isMergeIndexes() {
+        return this.mergeIndexes;
     }
 
     public String getNominatimUpdateInit() {
@@ -198,7 +205,7 @@ public class CommandLineArgs {
     public boolean isUsage() {
         return this.usage;
     }
-    
+
     public boolean getSupportStructuredQueries() { return supportStructuredQueries; }
 
     public int getMaxReverseResults() {

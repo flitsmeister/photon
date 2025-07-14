@@ -52,6 +52,12 @@ public class App {
                 return;
             }
 
+            if (args.isMergeIndexes()) {
+                shutdownES = true;
+                esServer.mergeIndexes();
+                return;
+            }
+
             // Working on an existing installation.
             // Update the index settings in case there are any changes.
             esServer.updateIndexSettings(args.getSynonymFile());
@@ -202,7 +208,7 @@ public class App {
                 args.getDefaultLanguage(), args.getMaxReverseResults()));
         get("reverse/", new ReverseSearchRequestHandler("reverse/", reverseHandler, dbProperties.getLanguages(),
                 args.getDefaultLanguage(), args.getMaxReverseResults()));
-        
+
         get("status", new StatusRequestHandler("status", server));
         get("status/", new StatusRequestHandler("status/", server));
 
